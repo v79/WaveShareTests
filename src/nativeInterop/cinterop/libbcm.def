@@ -1,0 +1,6 @@
+headers = bcm2835.h
+
+compilerOpts = -Isrc/include/bcm
+linkerOpts = -Lsrc/lib/bcm/ -lbcm2835
+
+strictEnums = bcm2835FunctionSelect bcm2835SPIBitOrder bcm2835SPIMode

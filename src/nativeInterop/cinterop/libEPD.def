@@ -1,0 +1,5 @@
+headers = EPD_2in7b.h
+
+compilerOpts = -Isrc/include/EPD_2in7b
+linkerOpts = -Lsrc/lib/EPD_2in7b/ -lEPD_2in7b
+

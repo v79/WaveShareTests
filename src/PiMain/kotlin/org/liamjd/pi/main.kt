@@ -2,13 +2,12 @@ package org.liamjd.pi
 
 import kotlinx.cinterop.convert
 import libbcm.*
-import org.liamjd.pi.epaper.EPDColours
 import org.liamjd.pi.epaper.EPD_Model
 import org.liamjd.pi.epaper.EPaperDisplay
+import org.liamjd.pi.khartoum.KhFont
 import org.liamjd.pi.khartoum.Khartoum
 import platform.posix.*
 import kotlin.contracts.ExperimentalContracts
-import kotlin.random.Random
 
 
 @ExperimentalContracts
@@ -44,13 +43,29 @@ fun main(args: Array<String>) {
 
 		// display is a portrait device
 
-		println("Black: 0,0,${blackImage.width},${blackImage.height}")
+/*		println("Black: 0,0,${blackImage.width},${blackImage.height}, 4")
 		blackImage.drawLine(0,0,blackImage.width,blackImage.height)
-		println("Red: ${redImage.width},0,0,${redImage.height}")
+		println("Red: ${redImage.width},0,0,${redImage.height}, 2")
 		redImage.drawLine(redImage.width,0,0,redImage.height)
-//
-//		blackImage.debugImage()
 
+		println("Black rectangle 50,50,150,150")
+		blackImage.drawRectangle(50,50,150,150,filled = false)
+		println("Red rectangle 75,75,125,125")
+		redImage.drawRectangle(75,75,50,125, filled = true)*/
+
+	/*	println("Black circle 125,175,25")
+		blackImage.drawCircle(blackImage.width / 2,blackImage.height / 2,35,filled = true)
+
+		println("Red circle 15,75,30")
+		redImage.drawCircle(15,75,30,filled = false)*/
+
+/*		println("Display a bitmap")
+		val bitmap = BitmapData()
+		blackImage.drawBitmap(bitmap.gImage_2in7b_Black)*/
+
+		println("Display a character: Zed")
+		blackImage.drawCharacter(50,50,' ', KhFont.Zed)
+		blackImage.drawCharacter(50,100,'!', KhFont.Zed)
 
 		println("Displaying image")
 		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))

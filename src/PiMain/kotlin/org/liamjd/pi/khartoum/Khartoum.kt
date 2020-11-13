@@ -201,10 +201,156 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 				}
 				xCurrent++
 			}
+		}
+	}
 
+	/**
+	 * Draw a byte array directly to the image
+	 * No sanity checks as yet
+	 */
+	fun drawBitmap(bitmap: UByteArray) {
+		var addr = 0
+		for (y in 0 until heightByte) {
+			for (x in 0 until widthByte) {
+				// 8 pixels = 1 byte
+				addr = x + y * widthByte
+				bytes[addr] = bitmap[addr]
+			}
+		}
+	}
+
+	fun drawCharacter(xStart: Int, yStart: Int, char: Char, font: KhFont) {
+		if (xStart > width || yStart > height) {
+			println("Start or end position is outside of the range of ($width,$height)")
 		}
 
+
+		val charOffset = (char - ' ')
+		var nextBytePtr = (font.lut[charOffset])
+		// should be 8385 for 'a'
+		println("charOffset: $charOffset, charDataPtr: $nextBytePtr")
+//		println("pages: ${font.height}, columns: ${font.width}")
+		val zeroByte: UByte = 0u
+
+		var byte: UByte
+
+		var bitColumn = 0
+		var pixelColumn = 0
+		var page = 1
+		var pageC: Char = 'A'
+
+		for(b in 0 until 40) {
+			print("${(font.table[nextBytePtr+b]).toString(16)}")
+		}
+		println()
+		for(b in 0 until 40 step 2) {
+			println("${(font.table[nextBytePtr+b]).toString(2).padStart(8,'0')} ${(font.table[nextBytePtr+b+1]).toString(2).padStart(8,'0')}")
+		}
+
+		var wC =1
+		print("   ")
+		for(w in 1 .. font.width) {
+			print("$wC")
+			wC++
+			if(w % 8 == 0) {
+				wC = 1
+			}
+		}
+		println()
+		println("======================================================================")
+		print("$pageC  ")
+		pageC++
+
+		for(pixel in 1 .. (font.width * font.height)) {
+
+			byte = font.table[nextBytePtr]
+			val bit = (byte and ((0x80).shr((bitColumn) % 8).toUByte()))
+
+			if (bit != zeroByte) {
+				print(".")
+				setPixel(xStart + pixelColumn, yStart + (page-1))
+			} else {
+				print("$bitColumn")
+				// do nothing
+			}
+			bitColumn++
+			pixelColumn++
+			if(bitColumn == 7) {
+				nextBytePtr++
+				bitColumn = 0
+			}
+			if(pixel % (font.width) == 0) {
+				println()
+				print("$pageC  ")
+				pixelColumn = 0
+				page++
+				pageC++
+			}
+
+		}
+		println()
+
+		/*for (page in 0 until font.height) {
+//			println("nextBytePtr: $nextBytePtr; font.table[nextBytePtr]: ${font.table[nextBytePtr]}/${font.table[nextBytePtr + 1]}")
+			for (column in 0 until font.width ) {
+				byte = font.table[nextBytePtr]
+				// starting byte is at position 8353 - charDataPtr -> 0x00u
+				// get each bit for the column
+				val bit = (byte and ((0x80).shr(column % 8).toUByte()))
+				if (bit != zeroByte) {
+					print(".")
+					setPixel(xStart + column, yStart + page)
+				} else {
+					print("_")
+					// do nothing
+				}
+				if (column % 8 == 7) {
+					nextBytePtr++
+				}
+				print(" ")
+			}
+//			if ((font.width * 8) % 8 != 0) {
+//				nextBytePtr++
+//				byte = font.table[nextBytePtr]
+//			}
+			println()
+//				println("page: $page, column: $column, byte: $byte (${byte.toString(16)}h)")
+		}*/
+
+
+		/*for (page in 0 until font.height) {
+			for (column in 0 until font.width) {
+				println("Page: $page, Column: $column, charDataPtr: $charDataPtr")
+				println("Byte at $charDataPtr = ${font.table[charDataPtr]}  / x${(font.table[charDataPtr]).toString(16)} / b${(font.table[charDataPtr]).toString(2)} ")
+
+				// if we've got a byte like 11001101... then to get an individual bit, we and it with the right-shifted-by-column % 8
+//				val shifted = (charDataPtr and (shifter.shr(column % 8)))
+				val shifted = (pointer and (shifter.shr(column % 8)).toUByte())
+				println("shifted: $shifted (b${shifted.toString(2)})")
+				if (shifted != zeroByte) {
+					println(".")
+					setPixel(xStart + column, yStart + page)
+				} else {
+					println("_")
+//					setPixel(xStart + column, yStart + page)
+				}
+				// one pixel is 8 bits
+				if (column % 8 == 7) {
+					pointer++
+				}
+			}
+			// write line
+			if(font.width % 8 != 0) {
+				pointer++
+			}
+			charDataPtr++
+		}*/
+
 	}
+
+//	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont)
+
+//	fun clear()
 
 }
 

@@ -15,7 +15,6 @@ import kotlin.contracts.ExperimentalContracts
 fun main(args: Array<String>) {
 	println("Initializing Waveshare e-Paper")
 
-
 	if (bcm2835_init() != 1) {
 		println("Error initializing bcm2835. Exiting")
 		exit(-1)
@@ -28,18 +27,14 @@ fun main(args: Array<String>) {
 		}
 
 		println("Set up image buffers")
-
 		val blackImage = Khartoum(ePaperModel = ePaper.model)
 		val redImage = Khartoum(ePaperModel = ePaper.model)
-
-
 
 		val imageSize: u_int16_t = if (ePaper.model.pixelWidth % 8 == 0) {
 			(((ePaper.model.pixelWidth / 8) * 16) * ePaper.model.pixelHeight).convert<uint16_t>()
 		} else {
 			(((ePaper.model.pixelWidth / 8 + 1) * 16) * ePaper.model.pixelHeight).convert<uint16_t>()
 		}
-
 
 		// display is a portrait device
 
@@ -66,11 +61,11 @@ fun main(args: Array<String>) {
 		println("Display the alphabet")
 		var x: Int = 0
 		var y: Int = 0
-		val h = KhFont.CascadiaCodeSemiBody24.height + 2
-		val mw = EPD_Model.TWO_IN7_B.pixelWidth / KhFont.CascadiaCodeSemiBody24.width
+		val h = KhFont.CascadiaCodeSemiBold24.height + 2
+		val mw = EPD_Model.TWO_IN7_B.pixelWidth / KhFont.CascadiaCodeSemiBold24.width
 		for(c in 'a'..'z') {
-			blackImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24)
-			x += KhFont.CascadiaCodeSemiBody24.width
+			blackImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBold24)
+			x += KhFont.CascadiaCodeSemiBold24.width
 			if(x % mw == 0) {
 				x = 0
 				y += h
@@ -79,8 +74,8 @@ fun main(args: Array<String>) {
 		x = 0
 		y = (34 +2) * 3
 		for(c in 'A'..'Z') {
-			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24)
-			x += KhFont.CascadiaCodeSemiBody24.width
+			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBold24)
+			x += KhFont.CascadiaCodeSemiBold24.width
 			if(x % mw == 0) {
 				x = 0
 				y += h
@@ -89,13 +84,23 @@ fun main(args: Array<String>) {
 		x = 0
 		y = (34 +2) * 6
 		for(c in '0'..'9') {
-			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24,true)
-			x += KhFont.CascadiaCodeSemiBody24.width
+			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBold24,true)
+			x += KhFont.CascadiaCodeSemiBold24.width
 			if(x % mw == 0) {
 				x = 0
 				y += h
 			}
 		}
+
+//		println("Some smaller text")
+//		blackImage.drawString(0,0,"The quick brown fox jumped over the lazy dog. 0123456789. ! $%^ &*()",KhFont.CascadiaMono12)
+
+//		println("Draw the £ sign, which is harder")
+//		blackImage.drawCharacter(10,10,'£',KhFont.CascadiaCodeSemiBold24)
+//		println("And again")
+//		blackImage.drawCharacter(10,10,,KhFont.CascadiaCodeSemiBold24)
+//		println("Via hex code in a string")
+//		blackImage.drawString(10,50,"\x7f",KhFont.CascadiaCodeSemiBold24)
 
 		println("Displaying image")
 		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))

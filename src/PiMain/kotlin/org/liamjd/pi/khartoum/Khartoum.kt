@@ -220,6 +220,87 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 	}
 
 	fun drawCharacter(xStart: Int, yStart: Int, char: Char, font: KhFont, invert: Boolean = false) {
+		println("Draw character $char at $xStart, $yStart")
+		if (xStart > width || yStart > height) {
+			println("Start or end position is outside of the range of ($width,$height)")
+		}
+		val zeroByte: UByte = 0u
+
+		val charOffset = (char - ' ')
+		var nextBytePtr = (font.lut[charOffset])
+		// TODO: What happens if the requested character is not found?
+		var byte: UByte
+		var bitColumn = 0
+		var pixelColumn = 0
+		var page = 1
+		var byteCounter = 1;
+
+		for (pixel in 1..(font.width * font.height)) {
+			byte = font.table[nextBytePtr]
+			val bit = (byte and ((0x80).shr((pixelColumn) % 8).toUByte()))
+			if (bit != zeroByte) {
+				if(!invert) {
+					setPixel(xStart + pixelColumn, yStart + (page - 1))
+				}
+			} else {
+				if(invert) {
+					setPixel(xStart + pixelColumn, yStart + (page - 1))
+				}
+			}
+			bitColumn++
+			pixelColumn++
+			// after 8 bits, move on to the next byte
+			if (bitColumn == 8) {
+				nextBytePtr++
+				bitColumn = 0
+				byteCounter++
+			}
+			if (pixel % (font.width) == 0) {
+				// assume it's wasteful - IT IS!
+				nextBytePtr++
+				bitColumn = 0
+				pixelColumn = 0
+				page++
+			}
+		}
+	}
+
+	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont, invert: Boolean = false) {
+		if (xStart > width || yStart > height) {
+			println("Start or end position is outside of the range of ($width,$height)")
+		}
+		// TODO: provide basic text wrapping option, would mean tokenizing it a bit?
+		println("Writing string $string")
+		var x: Int = xStart
+		var y: Int = yStart
+		val h = font.height + 2
+		val mw = ePaperModel.pixelWidth / font.width
+		println("x: $x, y: $y, h: $h, mw: $mw")
+		println(string.toCharArray())
+		for (c in string.toCharArray()) {
+			drawCharacter(x,y,c,font,invert)
+			x += font.width
+			if(x % mw == 0) {
+				x = 0
+				y += h
+			}
+		}
+	}
+
+	private fun outputBytes(
+		byteCounter: Int,
+		font: KhFont,
+		nextBytePtr: Int,
+		pageC: Char
+	): String {
+		return """${byteCounter.toString(10).padStart(3)} -> ${
+			(font.table[nextBytePtr]).toString(16).padStart(2)
+		},${(font.table[nextBytePtr + 1]).toString(16).padStart(2)},${
+			(font.table[nextBytePtr + 2]).toString(16).padStart(2)
+		} -> $pageC  """
+	}
+
+	private fun debugCharacterDraw(xStart: Int, yStart: Int, char: Char, font: KhFont, invert: Boolean = false) {
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
 		}
@@ -260,7 +341,6 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 			outputBytes(byteCounter, font, nextBytePtr, pageC)
 		)
 		pageC++
-
 
 		for (pixel in 1..(font.width * font.height)) {
 
@@ -307,27 +387,6 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 
 		}
 		println()
-
-
-	}
-
-	private fun outputBytes(
-		byteCounter: Int,
-		font: KhFont,
-		nextBytePtr: Int,
-		pageC: Char
-	): String {
-		return """${byteCounter.toString(10).padStart(3)} -> ${
-			(font.table[nextBytePtr]).toString(16).padStart(2)
-		},${(font.table[nextBytePtr + 1]).toString(16).padStart(2)},${
-			(font.table[nextBytePtr + 2]).toString(16).padStart(2)
-		} -> $pageC  """
-	}
-
-	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont) {
-		for (c in string.toCharArray()) {
-			// TODO
-		}
 	}
 
 //	fun clear()

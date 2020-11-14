@@ -63,9 +63,39 @@ fun main(args: Array<String>) {
 		val bitmap = BitmapData()
 		blackImage.drawBitmap(bitmap.gImage_2in7b_Black)*/
 
-		println("Display a character: Zed")
-		blackImage.drawCharacter(50,50,' ', KhFont.Zed)
-		blackImage.drawCharacter(50,100,'!', KhFont.Zed)
+		println("Display the alphabet")
+		var x: Int = 0
+		var y: Int = 0
+		val h = KhFont.CascadiaCodeSemiBody24.height + 2
+		val mw = EPD_Model.TWO_IN7_B.pixelWidth / KhFont.CascadiaCodeSemiBody24.width
+		for(c in 'a'..'z') {
+			blackImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24)
+			x += KhFont.CascadiaCodeSemiBody24.width
+			if(x % mw == 0) {
+				x = 0
+				y += h
+			}
+		}
+		x = 0
+		y = (34 +2) * 3
+		for(c in 'A'..'Z') {
+			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24)
+			x += KhFont.CascadiaCodeSemiBody24.width
+			if(x % mw == 0) {
+				x = 0
+				y += h
+			}
+		}
+		x = 0
+		y = (34 +2) * 6
+		for(c in '0'..'9') {
+			redImage.drawCharacter(x,y,c,KhFont.CascadiaCodeSemiBody24,true)
+			x += KhFont.CascadiaCodeSemiBody24.width
+			if(x % mw == 0) {
+				x = 0
+				y += h
+			}
+		}
 
 		println("Displaying image")
 		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))

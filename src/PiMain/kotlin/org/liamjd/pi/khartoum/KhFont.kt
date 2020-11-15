@@ -1,5 +1,12 @@
 package org.liamjd.pi.khartoum
 
+/**
+ * Enum containing some standard fonts for use on an ePaper device. The fonts are stored as a an array of unsigned bytes,
+ * MSB first, in [table]. Use the look-up table [lut] to find the starting position for a given character.
+ * Only supports ASCII characters in the range 32..127 (currently).
+ * All fonts are monospaced, and each glyph has the same [width] and [height] in pixels.
+ * [bytesPerGlyph] records how many bytes make up an individual glyph.
+ */
 @ExperimentalUnsignedTypes
 enum class KhFont(val table: UByteArray, val width: Int, val height: Int, val bytesPerGlyph: Int, val lut: IntArray) {
 	CascadiaCodeSemiBold24(

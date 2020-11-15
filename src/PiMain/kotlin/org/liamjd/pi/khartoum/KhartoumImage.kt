@@ -1,7 +1,7 @@
 package org.liamjd.pi.khartoum
 
 import kotlinx.cinterop.convert
-import org.liamjd.pi.epaper.EPD_Model
+import org.liamjd.pi.epaper.EPDModel
 import platform.posix.u_int16_t
 import platform.posix.uint16_t
 
@@ -10,7 +10,7 @@ import platform.posix.uint16_t
  * [ePaperModel]
  */
 @ExperimentalUnsignedTypes
-class KhartoumImage(private val ePaperModel: EPD_Model) {
+class KhartoumImage(private val ePaperModel: EPDModel) {
 
 	@ExperimentalUnsignedTypes
 	val bytes: UByteArray
@@ -300,10 +300,10 @@ class KhartoumImage(private val ePaperModel: EPD_Model) {
 	 * If [clrRotation] is set, this will change the orientation of the display.
 	 * This is the only way to change the rotation of the image.
 	 */
-	fun clear(clrRotation: Rotation = Rotation.NONE) {
+	fun reset(clrRotation: Rotation = Rotation.NONE) {
 		if (clrRotation != Rotation.NONE) {
 			rotation = clrRotation
-			if(rotation == Rotation.ZERO || rotation == Rotation.ONEEIGHTY) {
+			if (rotation == Rotation.ZERO || rotation == Rotation.ONEEIGHTY) {
 				width = ePaperModel.pixelWidth
 				height = ePaperModel.pixelHeight
 			} else {

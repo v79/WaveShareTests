@@ -7,7 +7,7 @@ import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
 @ExperimentalUnsignedTypes
-class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
+class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 
 	@OptIn(ExperimentalUnsignedTypes::class)
 	val uint8_ZERO: uint8_t = 0u
@@ -18,15 +18,15 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 
 		println("Start SPI Interface")
 		bcm2835_spi_begin()  //Start spi interface, set spi pin for the reuse function
-		println("Set SPI Bit Order ${SPIBitOrder.MSB_FIRST}")
+//		println("Set SPI Bit Order ${SPIBitOrder.MSB_FIRST}")
 		bcm2835_spi_setBitOrder(SPIBitOrder.MSB_FIRST.value)     //High first transmission
-		println("Set SPI Data mode ${SPIMode.MODE_0}")
+//		println("Set SPI Data mode ${SPIMode.MODE_0}")
 		bcm2835_spi_setDataMode(SPIMode.MODE_0.value)                  //spi mode 0
-		println("Set SPI Clock divider ${SPIClockDivider.DIVIDER_128}")
+//		println("Set SPI Clock divider ${SPIClockDivider.DIVIDER_128}")
 		bcm2835_spi_setClockDivider(SPIClockDivider.DIVIDER_128.value)  //Frequency
-		println("Set SPI ChipSelect ${SPIChipSelect.CS0}")
+//		println("Set SPI ChipSelect ${SPIChipSelect.CS0}")
 		bcm2835_spi_chipSelect(SPIChipSelect.CS0.value)                     //set CE0
-		println("Enable SPI ChipSelect Polarity ${SPIChipSelect.CS0}")
+//		println("Enable SPI ChipSelect Polarity ${SPIChipSelect.CS0}")
 		bcm2835_spi_setChipSelectPolarity(SPIChipSelect.CS0.value, LOW)     //enable cs0
 
 		initializeModel()
@@ -38,7 +38,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 		val height: Int = model.pixelHeight
 
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				println("Clear black")
 				sendCommand(0x10u)
 				for (j in 0 until height) {
@@ -60,7 +60,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 				sendCommand(0x12u)
 				readBusy()
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				TODO("Not yet implemented")
 			}
 		}
@@ -71,7 +71,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 		val height: Int = model.pixelHeight
 
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				require(images.size == 2) {
 					"Model $model requires two images; black and red"
 				}
@@ -83,7 +83,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 						sendData(images[0][i + j * width])
 					}
 				}
-				sendCommand(0x11u); // DATA_STOP
+				sendCommand(0x11u) // DATA_STOP
 
 				println("Displaying red image")
 				sendCommand(0x13u)
@@ -92,12 +92,11 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 						sendData(images[1][i + j * width])
 					}
 				}
-				sendCommand(0x11u); // DATA_STOP
-
-				sendCommand(0x12u);
-				readBusy();
+				sendCommand(0x11u) // DATA_STOP
+				sendCommand(0x12u)
+				readBusy()
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				require(images.size == 1) {
 					"Model $model can only display one image"
 				}
@@ -108,14 +107,14 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 
 	override fun sleep() {
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				sendCommand(0x50u)
 				sendData(0xf7u)
 				sendCommand(0x02u) //power off
 				sendCommand(0x07u) //deep sleep
 				sendData(0xA5u)
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				TODO("Not yet implemented")
 			}
 		}
@@ -123,27 +122,27 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 
 	override fun sendData(reg: UByte) {
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				digitalWrite(model.pins.dataHighCommandLow, 1u)
 				digitalWrite(model.pins.chipSelect, 0u)
 				spiWriteByte(reg)
 				digitalWrite(model.pins.chipSelect, 1u)
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				TODO("Not yet implemented")
 			}
 		}
 	}
 
-	override fun sendCommand(data: UByte) {
+	override fun sendCommand(cmd: UByte) {
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				digitalWrite(model.pins.dataHighCommandLow, 0u)
 				digitalWrite(model.pins.chipSelect, 0u)
-				spiWriteByte(data)
+				spiWriteByte(cmd)
 				digitalWrite(model.pins.chipSelect, 1u)
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				TODO("Not yet implemented")
 			}
 		}
@@ -164,6 +163,9 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 		bcm2835_close()
 	}
 
+	/**
+	 * Initialize the ePaper device GPIO pins
+	 */
 	private fun GPIOInit() {
 		println("Initializing pins")
 		setPinMode(model.pins.reset, 1u)
@@ -173,11 +175,13 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 		digitalWrite(model.pins.chipSelect, 1u)
 	}
 
+	/**
+	 * Initialize the ePaper device, making it ready to receive commands and display images
+	 */
 	private fun initializeModel() {
 		println("Initializing model $model")
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
-				println("Call EPD_2IN7B_Reset")
+			EPDModel.TWO_IN7_B -> {
 				reset()
 
 				sendCommand(0x06u)         //booster soft start
@@ -213,7 +217,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 				sendData(0x2bu) // VDL
 				sendData(0x2bu) // VDHR
 			}
-			EPD_Model.TWO_IN7 -> {
+			EPDModel.TWO_IN7 -> {
 				TODO("Not yet implemented")
 			}
 		}
@@ -230,7 +234,7 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 	override fun reset() {
 		println("Resetting $model")
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				digitalWrite(model.pins.reset, 1u)
 				delay(200u)
 				digitalWrite(model.pins.reset, 0u)
@@ -238,60 +242,102 @@ class EPaperDisplay(val model: EPD_Model) : EPaperDisplayCommands {
 				digitalWrite(model.pins.reset, 1u)
 				delay(200u)
 			}
-			EPD_Model.TWO_IN7 -> TODO("Not yet implemented")
+			EPDModel.TWO_IN7 -> TODO("Not yet implemented")
 		}
 	}
 
 	override fun readBusy() {
 		println("e-Paper busy")
 		when (model) {
-			EPD_Model.TWO_IN7_B -> {
+			EPDModel.TWO_IN7_B -> {
 				// 0: busy, 1: idle
 				val zero: uint8_t = 0u
 				while (bcm2835_gpio_lev(model.pins.busy) == zero) {
 					delay(100u)
 				}
 			}
-			EPD_Model.TWO_IN7 -> TODO("Not yet implemented")
+			EPDModel.TWO_IN7 -> TODO("Not yet implemented")
 		}
 		println("e-Paper busy release")
 	}
 
+	/**
+	 * Write a single byte [value] to the given GPIO [pin]
+	 */
 	private fun digitalWrite(pin: UByte, value: UByte) {
 		bcm2835_gpio_write(pin, value)
 	}
 
+	/**
+	 * Read a single byte value from the given GPIO [pin]
+	 */
 	private fun digitalRead(pin: UByte): uint8_t {
 		return bcm2835_gpio_lev(pin)
 	}
 
+	/**
+	 * Write a byte [value] over the SPI interface
+	 */
 	private fun spiWriteByte(value: UByte) {
 		bcm2835_spi_transfer(value)
 	}
 
 }
 
+@ExperimentalUnsignedTypes
 interface EPaperDisplayCommands {
-//    fun init(): UByte
-
+	/**
+	 * Clear the display on the device; takes several seconds, depending on model
+	 */
 	fun clear()
 
+	/**
+	 * Display the supplied images on the device. A separate UByteArray should be supplied for each 'ink colour'.
+	 * For instance, the Waveshare model 2.7inch B has Black and Red inks, so the [images] array should contain
+	 * two separate unsigned byte arrays.
+	 */
 	fun display(images: Array<UByteArray>)
 
+	/**
+	 * Sends the display to 'sleep', essentially an zero-power state.
+	 * Use this when the display will not need to be refreshed for a while.
+	 */
 	fun sleep()
 
+	/**
+	 * Send a byte [reg] as data to the device
+	 */
 	fun sendData(reg: UByte)
 
-	fun sendCommand(data: UByte)
+	/**
+	 * Send a byte [cmd] as a command to the device
+	 */
+	fun sendCommand(cmd: UByte)
 
+	/**
+	 * 'Pause' for [ms] milliseconds before sending the next command or data
+	 */
 	fun delay(ms: UInt)
 
+	/**
+	 * Shut down the device, bring it to a zero power state.
+	 * The last image shown will still be visible
+	 */
 	fun exit()
 
+	/**
+	 * Send the reset command to the device
+	 */
 	fun reset()
 
+	/**
+	 * Read the busy status of the device, and wait until the busy flag has been cleared
+	 */
 	fun readBusy()
 
+	/**
+	 * Set the [mode] of the given [pin]. The mode is typically "high" (1u) or "low" (0u)
+	 */
 	fun setPinMode(pin: UByte, mode: UByte)
 }
 

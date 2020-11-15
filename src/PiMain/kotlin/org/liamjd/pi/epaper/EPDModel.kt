@@ -2,16 +2,19 @@ package org.liamjd.pi.epaper
 
 import platform.posix.uint8_t
 
+/** Enum class representing all the Waveshare ePaper display models
+ * currently supported.
+ */
 @ExperimentalUnsignedTypes
-enum class EPD_Model(
+enum class EPDModel(
 	val modelNumber: String,
 	val pixelWidth: Int,
 	val pixelHeight: Int,
-	val pins: EPD_Pins,
+	val pins: EPDPins,
 	val colours: Set<EPDColours>
 ) {
 	TWO_IN7_B(
-		modelNumber = "2.7 inch B", pixelWidth = 176, pixelHeight = 264, pins = EPD_Pins(
+		modelNumber = "2.7 inch B", pixelWidth = 176, pixelHeight = 264, pins = EPDPins(
 			reset = 17u,
 			dataHighCommandLow = 25u,
 			chipSelect = 8u,
@@ -20,7 +23,7 @@ enum class EPD_Model(
 		setOf(EPDColours.WHITE, EPDColours.BLACK, EPDColours.RED)
 	),
 	TWO_IN7(
-		modelNumber = "2.7 inch", pixelWidth = 176, pixelHeight = 264, pins = EPD_Pins(
+		modelNumber = "2.7 inch", pixelWidth = 176, pixelHeight = 264, pins = EPDPins(
 			reset = 17u,
 			dataHighCommandLow = 25u,
 			chipSelect = 8u,
@@ -30,8 +33,14 @@ enum class EPD_Model(
 	)
 }
 
-class EPD_Pins(val reset: uint8_t, val dataHighCommandLow: uint8_t, val chipSelect: uint8_t, val busy: uint8_t)
+/**
+ * The set of command/data pins used by the ePaper device
+ */
+class EPDPins(val reset: uint8_t, val dataHighCommandLow: uint8_t, val chipSelect: uint8_t, val busy: uint8_t)
 
+/**
+ * Valid ink colours used by an ePaper device. Note that 'WHITE' is the same as 'no colour'
+ */
 enum class EPDColours {
 	WHITE,
 	BLACK,

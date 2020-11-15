@@ -5,8 +5,8 @@ package org.liamjd.pi
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class SPIBitOrder(val value: UByte) {
-    LSB_FIRST(0u),
-    MSB_FIRST(1u)
+	LSB_FIRST(0u),
+	MSB_FIRST(1u)
 }
 
 /**
@@ -14,10 +14,10 @@ enum class SPIBitOrder(val value: UByte) {
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class SPIMode(val value: UByte) {
-    MODE_0(0u),
-    MODE_1(1u),
-    MODE_2(2u),
-    MODE_3(3u)
+	MODE_0(0u),
+	MODE_1(1u),
+	MODE_2(2u),
+	MODE_3(3u)
 }
 
 /**
@@ -31,22 +31,22 @@ See comments in 'SPI Pins' for information about reliable SPI speeds.
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class SPIClockDivider(val value: UShort) {
-    DIVIDER_65536(0u),
-    DIVIDER_32768(32768u),
-    DIVIDER_8192(8192u),
-    DIVIDER_4096(4096u),
-    DIVIDER_2048(2048u),
-    DIVIDER_1024(1024u),
-    DIVIDER_512(512u),
-    DIVIDER_256(256u),
-    DIVIDER_128(182u),
-    DIVIDER_64(64u),
-    DIVIDER_32(32u),
-    DIVIDER_16(16u),
-    DIVIDER_8(8u),
-    DIVIDER_4(4u),
-    DIVIDER_2(2u),
-    DIVIDER_1(1u)
+	DIVIDER_65536(0u),
+	DIVIDER_32768(32768u),
+	DIVIDER_8192(8192u),
+	DIVIDER_4096(4096u),
+	DIVIDER_2048(2048u),
+	DIVIDER_1024(1024u),
+	DIVIDER_512(512u),
+	DIVIDER_256(256u),
+	DIVIDER_128(182u),
+	DIVIDER_64(64u),
+	DIVIDER_32(32u),
+	DIVIDER_16(16u),
+	DIVIDER_8(8u),
+	DIVIDER_4(4u),
+	DIVIDER_2(2u),
+	DIVIDER_1(1u)
 }
 
 /**
@@ -54,10 +54,10 @@ enum class SPIClockDivider(val value: UShort) {
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class SPIChipSelect(val value: UByte) {
-    CS0(0u),
-    CS1(1u),
-    CS2(2u),
-    CS_NONE(3u)
+	CS0(0u),
+	CS1(1u),
+	CS2(2u),
+	CS_NONE(3u)
 }
 
 /**
@@ -65,15 +65,15 @@ enum class SPIChipSelect(val value: UByte) {
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class FunctionSelect(val value: UByte) {
-    INPUT(0x00u),
-    OUTPUT(0x01u),
-    ALT0(0x04u),
-    ALT1(0x05u),
-    ALT2(0x06u),
-    ALT3(0x07u),
-    ALT4(0x03u),
-    ALT5(0x02u),
-    MASK(0x07u)
+	INPUT(0x00u),
+	OUTPUT(0x01u),
+	ALT0(0x04u),
+	ALT1(0x05u),
+	ALT2(0x06u),
+	ALT3(0x07u),
+	ALT4(0x03u),
+	ALT5(0x02u),
+	MASK(0x07u)
 }
 
 /**
@@ -81,7 +81,7 @@ enum class FunctionSelect(val value: UByte) {
  */
 @OptIn(ExperimentalUnsignedTypes::class)
 enum class PUDControl(val value: UByte) {
-    PUD_OFF(0x00u),
-    PUD_DOWN(0x01u),
-    PUD_UP(0x02u)
+	PUD_OFF(0x00u),
+	PUD_DOWN(0x01u),
+	PUD_UP(0x02u)
 }

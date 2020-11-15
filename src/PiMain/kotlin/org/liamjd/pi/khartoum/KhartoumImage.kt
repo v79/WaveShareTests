@@ -5,17 +5,25 @@ import org.liamjd.pi.epaper.EPD_Model
 import platform.posix.u_int16_t
 import platform.posix.uint16_t
 
+/**
+ * Construct a Khartoum image buffer for the given Waveshare ePaper model
+ * [ePaperModel]
+ */
 @ExperimentalUnsignedTypes
-class Khartoum(private val ePaperModel: EPD_Model) {
+class KhartoumImage(private val ePaperModel: EPD_Model) {
 
 	@ExperimentalUnsignedTypes
 	val bytes: UByteArray
-	val width = ePaperModel.pixelWidth
-	val height = ePaperModel.pixelHeight
-	val widthByte: Int
-	val heightByte: Int
 	var rotation = Rotation.ZERO
-	val imageSize: u_int16_t
+		private set
+	var width = ePaperModel.pixelWidth
+		private set
+	var height = ePaperModel.pixelHeight
+		private set
+	private val widthByte: Int
+	private val heightByte: Int
+	private val imageSize: u_int16_t
+	private val zeroByte: UByte = 0u
 
 	init {
 		imageSize = if (ePaperModel.pixelWidth % 8 == 0) {
@@ -33,46 +41,36 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 	}
 
 	/**
-	 * Set a single pixel at given [xPoint],[yPoint] to be true
+	 * Set a single pixel at given [xPoint],[yPoint] to be true, e.g. filled in
 	 */
 	fun setPixel(xPoint: Int, yPoint: Int) {
 
+		val x = when(rotation) {
+			Rotation.NONE, Rotation.ZERO -> xPoint
+			Rotation.CW -> ePaperModel.pixelWidth - yPoint -1
+			Rotation.ONEEIGHTY -> ePaperModel.pixelWidth - xPoint -1
+			Rotation.CCW -> yPoint
+		}
+		val y = when(rotation) {
+			Rotation.NONE, Rotation.ZERO -> yPoint
+			Rotation.CW -> xPoint
+			Rotation.ONEEIGHTY -> ePaperModel.pixelHeight - yPoint -1
+			Rotation.CCW -> ePaperModel.pixelHeight - xPoint -1
+		}
+
 		if (xPoint > width || yPoint > height) {
-			println("Coordinates ($xPoint,$yPoint) exceed image dimensions of ePaper (${ePaperModel.pixelWidth},${ePaperModel.pixelHeight})")
+			println("Coordinates ($xPoint,$yPoint) exceed image dimensions of ePaper (${width},${height})")
 			return
 		}
-		// TODO: handle rotations
+
 		// TODO: handle mirrored?
 		// TODO: what's scale about?
-		val x: Int = xPoint
-		val y: Int = yPoint
 
 		val address: Int = (x / 8 + y * widthByte)
 		val currentValue = bytes[address]
 		bytes[address] = currentValue or (0x80 shr ((x % 8))).toUByte()
-		/* if (colour == EPDColours.BLACK) {
-			 bytes[address] = currentValue and (0x80 shr ((x % 8))).inv().toUByte()
-		 } else {
-			 bytes[address] = currentValue or (0x80 shr ((x % 8))).inv().toUByte()
-		 }*/
 	}
 
-	/**
-	 * Output all the bytes of the image to the screen, in hex
-	 */
-	fun debugImage() {
-		println("Debug display bytes for image")
-		val debugWidth: Int =
-			if (ePaperModel.pixelWidth % 8 == 0) ePaperModel.pixelWidth / 8 else ePaperModel.pixelWidth / 8 + 1
-		val debugHeight: Int = ePaperModel.pixelHeight
-		for (i in 0 until debugHeight) {
-			for (j in 0 until debugWidth) {
-				val hex = (bytes[i + j * debugWidth]).toString(16)
-				print("$hex,")
-			}
-			println()
-		}
-	}
 
 	/**
 	 * Draw line starting at [xStart],[yStart] and ending at [xEnd],x[yEnd]
@@ -106,7 +104,6 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 
 		while (true) {
 			setPixel(x, y)
-
 			if (esp * 2 >= dy) {
 				if (x == xEnd) {
 					break
@@ -157,7 +154,7 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 			return
 		}
 		//Draw a circle from(0, R) as a starting point
-		var xCurrent: Int = 0
+		var xCurrent = 0
 		var yCurrent = radius
 
 		//Cumulative error,judge the next point of the logo
@@ -166,14 +163,14 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		if (filled) {
 			while (xCurrent <= yCurrent) {
 				for (sCountY in xCurrent until yCurrent) {
-					setPixel(xCentre + xCurrent, yCentre + sCountY);//1
-					setPixel(xCentre - xCurrent, yCentre + sCountY);//2
-					setPixel(xCentre - sCountY, yCentre + xCurrent);//3
-					setPixel(xCentre - sCountY, yCentre - xCurrent);//4
-					setPixel(xCentre - xCurrent, yCentre - sCountY);//5
-					setPixel(xCentre + xCurrent, yCentre - sCountY);//6
-					setPixel(xCentre + sCountY, yCentre - xCurrent);//7
-					setPixel(xCentre + sCountY, yCentre + xCurrent);
+					setPixel(xCentre + xCurrent, yCentre + sCountY)//1
+					setPixel(xCentre - xCurrent, yCentre + sCountY)//2
+					setPixel(xCentre - sCountY, yCentre + xCurrent)//3
+					setPixel(xCentre - sCountY, yCentre - xCurrent)//4
+					setPixel(xCentre - xCurrent, yCentre - sCountY)//5
+					setPixel(xCentre + xCurrent, yCentre - sCountY)//6
+					setPixel(xCentre + sCountY, yCentre - xCurrent)//7
+					setPixel(xCentre + sCountY, yCentre + xCurrent)
 				}
 				if (esp < 0) {
 					esp += 4 * xCurrent + 6
@@ -185,14 +182,14 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 			}
 		} else {
 			while (xCurrent <= yCurrent) {
-				setPixel(xCentre + xCurrent, yCentre + yCurrent);//1
-				setPixel(xCentre - xCurrent, yCentre + yCurrent);//2
-				setPixel(xCentre - yCurrent, yCentre + xCurrent);//3
-				setPixel(xCentre - yCurrent, yCentre - xCurrent);//4
-				setPixel(xCentre - xCurrent, yCentre - yCurrent);//5
-				setPixel(xCentre + xCurrent, yCentre - yCurrent);//6
-				setPixel(xCentre + yCurrent, yCentre - xCurrent);//7
-				setPixel(xCentre + yCurrent, yCentre + xCurrent);//0
+				setPixel(xCentre + xCurrent, yCentre + yCurrent)//1
+				setPixel(xCentre - xCurrent, yCentre + yCurrent)//2
+				setPixel(xCentre - yCurrent, yCentre + xCurrent)//3
+				setPixel(xCentre - yCurrent, yCentre - xCurrent)//4
+				setPixel(xCentre - xCurrent, yCentre - yCurrent)//5
+				setPixel(xCentre + xCurrent, yCentre - yCurrent)//6
+				setPixel(xCentre + yCurrent, yCentre - xCurrent)//7
+				setPixel(xCentre + yCurrent, yCentre + xCurrent)//0
 				if (esp < 0) {
 					esp += 4 * xCurrent + 6
 				} else {
@@ -209,7 +206,8 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 	 * No sanity checks as yet
 	 */
 	fun drawBitmap(bitmap: UByteArray) {
-		var addr = 0
+		var addr: Int
+		// TODO: handle rotations? If that makes sense?
 		for (y in 0 until heightByte) {
 			for (x in 0 until widthByte) {
 				// 8 pixels = 1 byte
@@ -219,8 +217,12 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		}
 	}
 
+	/**
+	 * Display the specified character [char] at the co-ordinates [xStart, yStart] (which is the top-left pixel of the glyph)
+	 * Specify the font used in [font]. If [invert] is specified, the colours will be inverted, e.g. white-on-black.
+	 */
 	fun drawCharacter(xStart: Int, yStart: Int, char: Char, font: KhFont, invert: Boolean = false) {
-		println("Draw character $char at $xStart, $yStart")
+		// println("Draw character $char at $xStart, $yStart")
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
 		}
@@ -233,17 +235,17 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		var bitColumn = 0
 		var pixelColumn = 0
 		var page = 1
-		var byteCounter = 1;
+		var byteCounter = 1
 
 		for (pixel in 1..(font.width * font.height)) {
 			byte = font.table[nextBytePtr]
 			val bit = (byte and ((0x80).shr((pixelColumn) % 8).toUByte()))
 			if (bit != zeroByte) {
-				if(!invert) {
+				if (!invert) {
 					setPixel(xStart + pixelColumn, yStart + (page - 1))
 				}
 			} else {
-				if(invert) {
+				if (invert) {
 					setPixel(xStart + pixelColumn, yStart + (page - 1))
 				}
 			}
@@ -265,26 +267,52 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		}
 	}
 
-	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont, invert: Boolean = false) {
+	/**
+	 * Write the text [string] starting at co-oridinates [xStart],[yStart] using the font [font]
+	 * If [invert] is specified, the colours will be inverted, e.g. white-on-black.
+	 * Returns the number of lines of text drawn
+	 */
+	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont, invert: Boolean = false): Int {
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
 		}
 		// TODO: provide basic text wrapping option, would mean tokenizing it a bit?
-		println("Writing string $string")
+//		println("Writing string $string")
 		var x: Int = xStart
 		var y: Int = yStart
 		val h = font.height + 2
-		val mw = ePaperModel.pixelWidth / font.width
-		println("x: $x, y: $y, h: $h, mw: $mw")
-		println(string.toCharArray())
+		val maxWidth = width / font.width
+		println("x: $x, y: $y, h: $h, mw: $maxWidth; current image width: $width")
 		for (c in string.toCharArray()) {
-			drawCharacter(x,y,c,font,invert)
+			drawCharacter(x, y, c, font, invert)
 			x += font.width
-			if(x % mw == 0) {
+			// move to new line if needed
+			if(x + font.width > width) {
 				x = 0
 				y += h
 			}
 		}
+		return (y / (font.height + 2))
+	}
+
+	/**
+	 * Clear the image, filling it with zero bytes.
+	 * If [clrRotation] is set, this will change the orientation of the display.
+	 * This is the only way to change the rotation of the image.
+	 */
+	fun clear(clrRotation: Rotation = Rotation.NONE) {
+		if (clrRotation != Rotation.NONE) {
+			rotation = clrRotation
+			if(rotation == Rotation.ZERO || rotation == Rotation.ONEEIGHTY) {
+				width = ePaperModel.pixelWidth
+				height = ePaperModel.pixelHeight
+			} else {
+				width = ePaperModel.pixelHeight
+				height = ePaperModel.pixelWidth
+			}
+			println("Image cleared with rotation. Image dimensions are ${width}w and ${height}h")
+		}
+		bytes.fill(zeroByte)
 	}
 
 	private fun outputBytes(
@@ -304,8 +332,6 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
 		}
-		val zeroByte: UByte = 0u
-
 		val charOffset = (char - ' ')
 		println("charOffset: $charOffset")
 		var nextBytePtr = (font.lut[charOffset])
@@ -315,7 +341,6 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		println("Bytes per glyph: ${font.bytesPerGlyph}")
 		val calculatedBytesPerGlyph = font.height * (font.width / 8 + if (font.width % 8 == 0) 1 else 0)
 		println("calculatedBytesPerGlyph: $calculatedBytesPerGlyph")
-
 
 		var byte: UByte
 		var bitColumn = 0
@@ -329,12 +354,10 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 				println()
 			}
 		}
-		println()
-
 
 		println()
 		println("==============================================")
-		var byteCounter = 1;
+		var byteCounter = 1
 		println("BC  ->  Bytes   -> Pg   Bits 0..${font.width - 1}")
 		println("----------------------------------------")
 		print(
@@ -349,7 +372,7 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 
 			if (bit != zeroByte) {
 				print("#")
-				if(!invert) {
+				if (!invert) {
 					setPixel(xStart + pixelColumn, yStart + (page - 1))
 				}
 			} else {
@@ -358,7 +381,7 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 				} else {
 					print(" ")
 				}
-				if(invert) {
+				if (invert) {
 					setPixel(xStart + pixelColumn, yStart + (page - 1))
 				}
 			}
@@ -389,13 +412,35 @@ class Khartoum(private val ePaperModel: EPD_Model) {
 		println()
 	}
 
-//	fun clear()
+	/**
+	 * Output all the bytes of the image to the screen, in hex
+	 */
+	fun debugImage() {
+		println("Debug display bytes for image")
+		val debugWidth: Int =
+			if (ePaperModel.pixelWidth % 8 == 0) ePaperModel.pixelWidth / 8 else ePaperModel.pixelWidth / 8 + 1
+		val debugHeight: Int = ePaperModel.pixelHeight
+		for (i in 0 until debugHeight) {
+			for (j in 0 until debugWidth) {
+				val hex = (bytes[i + j * debugWidth]).toString(16)
+				print("$hex,")
+			}
+			println()
+		}
+	}
 
 }
 
-enum class Rotation(val angle: Int) {
-	ZERO(0),
-	CW(90),
-	ONEEIGHTY(180),
-	CCW(270)
+/**
+ * ePaper starts in portrait mode
+ * For landscape, call image.clear() with a rotation of CW or CCW.
+ * Rotation can only be set during a clear call.
+ * Rotation.None is internal and should not be used.
+ */
+enum class Rotation {
+	NONE,
+	ZERO,
+	CW,
+	ONEEIGHTY,
+	CCW
 }

@@ -18,6 +18,7 @@ kotlin {
             "main" {
                 cinterops {
                     val libbcm by cinterops.creating {}
+                    val libbmp by cinterops.creating {}
                 }
             }
         }

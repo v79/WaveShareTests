@@ -10,7 +10,8 @@ Makes use of the [bcm2835](https://www.airspayce.com/mikem/bcm2835/index.html) C
 - `drawCircle`
 - `drawCharacter` - render a single character in the ASCII 32..127 range only. A monospace font must be provided; the enum class `KhFont` provides two sample fonts. Forms the basis of the drawString function
 - `drawString` - renders a Kotlin text string, hard-wrapping at the edge of the display. Again, only ASCII 32..127 for now.
-- `drawBitmap` - draws the entire screen with a bitmap image, encoded as a unsigned byte array.
+- `drawBitmap` - draws the entire screen with a bitmap image, encoded as an unsigned byte array.
+- `clear` - reset the image to zero, and optionally change its rotation (can only rotate an empty image)
 
 The library can work in either portrait or landscape mode.
 

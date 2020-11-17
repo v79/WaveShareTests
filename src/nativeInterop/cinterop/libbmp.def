@@ -1,0 +1,4 @@
+headers = bmp.h
+
+compilerOpts = -Isrc/include/bmp
+linkerOpts = -Lsrc/lib/bmp/ -lbmp

@@ -4,7 +4,6 @@ import kotlinx.cinterop.convert
 import libbcm.bcm2835_init
 import org.liamjd.pi.epaper.EPDModel
 import org.liamjd.pi.epaper.EPaperDisplay
-import org.liamjd.pi.khartoum.BitmapFileHandler
 import org.liamjd.pi.khartoum.KhFont
 import org.liamjd.pi.khartoum.KhartoumImage
 import org.liamjd.pi.khartoum.Rotation
@@ -135,8 +134,8 @@ fun main(args: Array<String>) {
 		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 		ePaper.delay(500u)
 
-		println("Exporting blackImage to a BMP file")
-		BitmapFileHandler.saveBitmapFile(blackImage, "blackImage001.bmp")
+//		println("Exporting blackImage to a BMP file")
+//		BitmapFileHandler.saveBitmapFile(blackImage, "blackImage001.bmp")
 
 		// close down
 		println("Call Sleep")

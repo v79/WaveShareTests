@@ -3,13 +3,10 @@ package org.liamjd.pi.epaper
 import libbcm.*
 import org.liamjd.pi.*
 import platform.posix.uint8_t
-import kotlin.contracts.ExperimentalContracts
 
-@ExperimentalContracts
 @ExperimentalUnsignedTypes
 class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 
-	@OptIn(ExperimentalUnsignedTypes::class)
 	val uint8_ZERO: uint8_t = 0u
 
 	init {

@@ -3,7 +3,7 @@ package org.liamjd.pi
 /**
  * Specifies the SPI data bit ordering for bcm2835_spi_setBitOrder()
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class SPIBitOrder(val value: UByte) {
 	LSB_FIRST(0u),
 	MSB_FIRST(1u)
@@ -12,7 +12,7 @@ enum class SPIBitOrder(val value: UByte) {
 /**
  * Specify the SPI data mode to be passed to bcm2835_spi_setDataMode()
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class SPIMode(val value: UByte) {
 	MODE_0(0u),
 	MODE_1(1u),
@@ -29,7 +29,7 @@ The frequencies shown for each divider have been confirmed by measurement on RPi
 The system clock frequency on RPi3 is different, so the frequency you get from a given divider will be different.
 See comments in 'SPI Pins' for information about reliable SPI speeds.
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class SPIClockDivider(val value: UShort) {
 	DIVIDER_65536(0u),
 	DIVIDER_32768(32768u),
@@ -52,7 +52,7 @@ enum class SPIClockDivider(val value: UShort) {
 /**
  * Specify the SPI chip select pin(s)
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class SPIChipSelect(val value: UByte) {
 	CS0(0u),
 	CS1(1u),
@@ -63,7 +63,7 @@ enum class SPIChipSelect(val value: UByte) {
 /**
  * Port function select modes for bcm2835_gpio_fsel()
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class FunctionSelect(val value: UByte) {
 	INPUT(0x00u),
 	OUTPUT(0x01u),
@@ -79,7 +79,7 @@ enum class FunctionSelect(val value: UByte) {
 /**
  * Pullup/Pulldown defines for bcm2835_gpio_pud()
  */
-@OptIn(ExperimentalUnsignedTypes::class)
+@ExperimentalUnsignedTypes
 enum class PUDControl(val value: UByte) {
 	PUD_OFF(0x00u),
 	PUD_DOWN(0x01u),

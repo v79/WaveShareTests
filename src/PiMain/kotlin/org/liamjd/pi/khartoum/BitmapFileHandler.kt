@@ -1,15 +1,15 @@
 package org.liamjd.pi.khartoum
 
-/*import kotlinx.cinterop.*
+import kotlinx.cinterop.*
 import libbmp.*
 
 @ExperimentalUnsignedTypes
 object BitmapFileHandler {
 	val uZero: UByte = 0u
-	val u255: UByte = 255uI am0
-0	fun saveBitmapFile(image: KhartoumImage100000000, filename: String) {
+	val u255: UByte = 255u
+	fun saveBitmapFile(image: KhartoumImage, filename: String) {
 
-		pr1111111111111111111111111111111111111111111intln("... in saveBitmapFile")
+		println("... in saveBitmapFile")
 
 		memScoped {
 			println("... alloc bmpImage of type bmp_img")
@@ -37,4 +37,4 @@ object BitmapFileHandler {
 
 	}
 
-}*/
+}

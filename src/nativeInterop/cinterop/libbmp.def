@@ -1,7 +1,6 @@
 headers = bmp.h
 
 compilerOpts = -Isrc/include/bmp
-#linkerOpts = -Lsrc/lib/bmp/ -lbmp
 
 staticLibraries = libbmp.a
 libraryPaths = src/lib/bmp

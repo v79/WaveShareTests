@@ -5,34 +5,93 @@ import libbmp.*
 
 @ExperimentalUnsignedTypes
 object BitmapFileHandler {
-	val uZero: UByte = 0u
-	val u255: UByte = 255u
+	private val uZero: UByte = 0u
+	private val u255: UByte = 255u
+
 	fun saveBitmapFile(image: KhartoumImage, filename: String) {
 
-		println("... in saveBitmapFile")
-
 		memScoped {
-			println("... alloc bmpImage of type bmp_img")
-			val bmpImage = nativeHeap.alloc<bmp_img>()
-			println("... init bmpImg with width ${image.width} and height ${image.height}")
-			bmp_img_init_df(bmpImage.ptr, image.width, image.height)
 
-			println("... entering pixel loop")
-			for (w in 0 until image.width) {
-				for (h in 0 until image.height) {
-					if (image.bytes[w + h] != uZero) {
-						bmp_pixel_init(bmpImage.img_pixels?.get(w + h), u255, u255, u255)
+			val bmpImage = nativeHeap.alloc<bmp_img>()
+			bmp_img_init_df(bmpImage.ptr, image.width, image.height)
+			/*for (y in 0 until 512) {
+				for (x in 0 until 512) {
+					println("x,y: $x,$y -> pixel ${bmpImage.img_pixels?.get(x)?.get(y)},")
+					if ((y % 128 < 64 && x % 128 < 64) ||
+						(y % 128 >= 64 && x % 128 >= 64)
+					) {
+						bmp_pixel_init(bmpImage.img_pixels?.get(x)?.get(y)?.ptr, 250, 250, 250);
 					} else {
-						bmp_pixel_init(bmpImage.img_pixels?.get(w + h), uZero, uZero, uZero)
+						bmp_pixel_init(bmpImage.img_pixels?.get(x)?.get(y)?.ptr, 0, 0, 0);
+					}
+				}
+			}*/
+
+			var hStart = 0
+			var hEnd = image.height
+			var wStart = 0
+			var wEnd = image.width
+			if (image.rotation == Rotation.ZERO || image.rotation == Rotation.NONE) {
+				// do nothing, h and w are correct
+			}
+			if (image.rotation == Rotation.ONEEIGHTY) {
+				// inverted portrait, but do nothing for bmp purposes?
+			}
+			if (image.rotation == Rotation.CW) {
+				// inverted landscape
+			}
+			if (image.rotation == Rotation.CCW) {
+				// landscape
+			}
+
+			println("Image rotation is: ${image.rotation}")
+			var byte: UByte
+			var pixelColumn = 0
+
+			val pixelWidth = if (image.rotation == Rotation.CCW || image.rotation == Rotation.CW) {
+				image.width
+			} else {
+				image.width
+			}
+			val widthByte = if (pixelWidth % 8 == 0) {
+				(pixelWidth / 8)
+			} else {
+				(pixelWidth / 8 + 1)
+			}
+
+			var address: Int
+
+			for (h in hStart until hEnd) {
+				for (w in wStart until wEnd) {
+					try {
+						if (image.rotation == Rotation.CCW) {
+							address = (w / 8 + h * widthByte)
+						} else {
+							address = (w / 8 + h * widthByte)
+						}
+						byte = image.bytes[address]
+
+						val bit = (byte and ((0x80).shr((pixelColumn % 8)).toUByte()))
+						if (bit != uZero) {
+							// colours inverted at this point?
+							bmp_pixel_init(bmpImage.img_pixels?.get(h)?.get(w)?.ptr, uZero, uZero, uZero)
+						} else {
+							bmp_pixel_init(bmpImage.img_pixels?.get(h)?.get(w)?.ptr, u255, u255, u255)
+						}
+						pixelColumn++
+						// after 8 bits, reset
+						if (pixelColumn == 8) {
+							pixelColumn = 0
+						}
+					} catch (e: Exception) {
+						println("Caught exception $e")
 					}
 				}
 			}
-			println("... exit pixel loop")
+
 			println("... write image file to $filename")
 			bmp_img_write(bmpImage.ptr, filename)
-			println("... free bmImage memory")
 			bmp_img_free(bmpImage.ptr)
-			println("... done!")
 		}
 
 	}

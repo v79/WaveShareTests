@@ -1,5 +1,5 @@
 plugins {
-    kotlin("multiplatform") version "1.4.10"
+    kotlin("multiplatform") version "1.4.20"
 }
 
 group = "org.liamjd.pi"
@@ -20,19 +20,29 @@ kotlin {
                     val libbcm by cinterops.creating {}
                     val libbmp by cinterops.creating {}
                 }
+
             }
         }
         binaries {
             executable("waveshare") {
+                this.optimized = false
                 entryPoint = "org.liamjd.pi.main"
             }
         }
     }
 
-
     sourceSets {
-       val PiMain by getting
+        val PiMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-io:0.1.16")
+            }
+        }
     }
 
+}
 
+
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).all {
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }

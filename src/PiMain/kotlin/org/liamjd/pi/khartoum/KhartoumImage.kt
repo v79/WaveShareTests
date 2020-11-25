@@ -59,7 +59,7 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 		}
 
 		if (xPoint > width || yPoint > height) {
-			println("Coordinates ($xPoint,$yPoint) exceed image dimensions of ePaper (${width},${height})")
+//			println("Coordinates ($xPoint,$yPoint) exceed image dimensions of ePaper (${width},${height})")
 			return
 		}
 

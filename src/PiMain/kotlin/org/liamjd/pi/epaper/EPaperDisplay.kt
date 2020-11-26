@@ -29,6 +29,13 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 		initializeModel()
 	}
 
+	/**
+	 * This function exists because of Kotlin compiler defect https://youtrack.jetbrains.com/issue/KT-43582 or
+	 * https://youtrack.jetbrains.com/issue/KT-36878
+	 * The existence of this function is supposed to ensure the appropriate C-headers are generated for the ByteArray class
+	 */
+	fun exposeByteArray(): ByteArray = byteArrayOf(0x01, 0x00)
+
 	override fun clear() {
 		println("Clearing displays")
 		val width: Int = if (model.pixelWidth % 8 == 0) model.pixelWidth / 8 else model.pixelWidth / 8 + 1

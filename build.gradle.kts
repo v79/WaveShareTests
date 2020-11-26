@@ -14,6 +14,7 @@ kotlin {
     val isMingwX64 = hostOs.startsWith("Windows")
 
     linuxArm32Hfp("Pi") {
+
         compilations {
             "main" {
                 cinterops {
@@ -24,7 +25,10 @@ kotlin {
             }
         }
         binaries {
-            executable("waveshare") {
+            /* staticLib {
+				 this.optimized = false
+			 }*/
+            executable {
                 this.optimized = false
                 entryPoint = "org.liamjd.pi.main"
             }

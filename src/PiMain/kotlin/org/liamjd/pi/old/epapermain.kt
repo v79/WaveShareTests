@@ -1,4 +1,4 @@
-package org.liamjd.pi
+package org.liamjd.pi.old
 
 import kotlinx.cinterop.convert
 import libbcm.bcm2835_init
@@ -16,7 +16,7 @@ import kotlin.contracts.ExperimentalContracts
 
 @ExperimentalContracts
 @ExperimentalUnsignedTypes
-fun main(args: Array<String>) {
+fun mainOld(args: Array<String>) {
 	println("Initializing Waveshare e-Paper")
 
 	if (bcm2835_init() != 1) {

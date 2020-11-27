@@ -35,8 +35,8 @@ class CUrl(url: String, extraHeaders: List<String>? = null) {
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, cHeaders)
 		}
 
-		// verbose mode for debugging
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+//		// verbose mode for debugging
+//		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
 	val header = Event<String>()
@@ -47,7 +47,9 @@ class CUrl(url: String, extraHeaders: List<String>? = null) {
 	}
 
 	fun post(data: String) {
-		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data)
+		// whatever this getPointer thingy does, it's essential!
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.cstr.getPointer(MemScope()))
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, data.length)
 		fetch()
 	}
 

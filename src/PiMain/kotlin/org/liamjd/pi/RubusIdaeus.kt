@@ -46,33 +46,31 @@ fun getSpotifyToken() {
 
 	val spotifySecret = "a71ffb04a41444c3b5e901d2b23bf071"
 	val spotifyClient = "4713cdaa7a21413a9ce0e6910ab8ec19"
-	val x = "$spotifyClient:$spotifySecret".encodeToByteArray()
-
-	println(x)
-
-	val spotifyAuth = x.encodeBase64().toKString()
-
+	val spotifyAuthBytes = "$spotifyClient:$spotifySecret".encodeToByteArray()
+	val spotifyAuth = spotifyAuthBytes.encodeBase64().toKString()
 	println("spotifyAuth: $spotifyAuth")
 
-
-
 	println("create CUrl")
+
 	val location = "https://accounts.spotify.com/api/token"
 	val postData = "grant_type=client_credentials"
-	println("Fetching spotify information (for $location)...")
 	val extraHeaders = arrayListOf<String>(
 		"Authorization: Basic $spotifyAuth",
 		"Accept: application/json",
 		"Content-Type: application/x-www-form-urlencoded"
 	)
+	var accessTokenJson: String = ""
 	val curl = CUrl(url = location, extraHeaders = extraHeaders).apply {
 		header += { if (it.startsWith("HTTP")) println("Response Status: $it") }
 		body += { data ->
-			println(data)
+			accessTokenJson = data
 		}
 	}
+	println("Calling post with data = $postData")
 	curl.post(data = postData)
 	curl.close()
+
+	println("Everything closed, our access token is: $accessTokenJson")
 
 	/*val curl = curl_easy_init()
 	val data = "grant_type=client_credentials"

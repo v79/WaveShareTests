@@ -29,13 +29,12 @@ class CUrl(url: String, extraHeaders: List<String>? = null) {
 		if (extraHeaders != null && extraHeaders.isNotEmpty()) {
 			var cHeaders: CPointer<curl_slist>? = null
 			for (h in extraHeaders) {
-				println("Appending header: $h")
 				cHeaders = curl_slist_append(cHeaders, h)
 			}
 			curl_easy_setopt(curl, CURLOPT_HTTPHEADER, cHeaders)
 		}
 
-//		// verbose mode for debugging
+//	    verbose mode for debugging
 //		curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 	}
 
@@ -70,6 +69,7 @@ fun CPointer<ByteVar>.toKString(length: Int): String {
 	return bytes.decodeToString()
 }
 
+@ExperimentalUnsignedTypes
 fun header_callback(buffer: CPointer<ByteVar>?, size: size_t, nitems: size_t, userdata: COpaquePointer?): size_t {
 	if (buffer == null) return 0u
 	if (userdata != null) {
@@ -81,6 +81,9 @@ fun header_callback(buffer: CPointer<ByteVar>?, size: size_t, nitems: size_t, us
 }
 
 
+@ExperimentalUnsignedTypes
+// size is always 1
+// nitems seems to be around ~1390 characters, it is a "chunk"
 fun write_callback(buffer: CPointer<ByteVar>?, size: size_t, nitems: size_t, userdata: COpaquePointer?): size_t {
 	if (buffer == null) return 0u
 	if (userdata != null) {

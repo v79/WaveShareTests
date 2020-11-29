@@ -45,17 +45,17 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 	 */
 	fun setPixel(xPoint: Int, yPoint: Int) {
 
-		val x = when(rotation) {
+		val x = when (rotation) {
 			Rotation.NONE, Rotation.ZERO -> xPoint
-			Rotation.CW -> ePaperModel.pixelWidth - yPoint -1
-			Rotation.ONEEIGHTY -> ePaperModel.pixelWidth - xPoint -1
+			Rotation.CW -> ePaperModel.pixelWidth - yPoint - 1
+			Rotation.ONEEIGHTY -> ePaperModel.pixelWidth - xPoint - 1
 			Rotation.CCW -> yPoint
 		}
-		val y = when(rotation) {
+		val y = when (rotation) {
 			Rotation.NONE, Rotation.ZERO -> yPoint
 			Rotation.CW -> xPoint
-			Rotation.ONEEIGHTY -> ePaperModel.pixelHeight - yPoint -1
-			Rotation.CCW -> ePaperModel.pixelHeight - xPoint -1
+			Rotation.ONEEIGHTY -> ePaperModel.pixelHeight - yPoint - 1
+			Rotation.CCW -> ePaperModel.pixelHeight - xPoint - 1
 		}
 
 		if (xPoint > width || yPoint > height) {
@@ -272,7 +272,14 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 	 * If [invert] is specified, the colours will be inverted, e.g. white-on-black.
 	 * Returns the number of lines of text drawn
 	 */
-	fun drawString(xStart: Int, yStart: Int, string: String, font: KhFont, invert: Boolean = false): Int {
+	fun drawString(
+		xStart: Int,
+		yStart: Int,
+		string: String,
+		font: KhFont,
+		invert: Boolean = false,
+		wrapMode: TextWrapMode = TextWrapMode.WRAP
+	): DrawDimensions {
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
 		}
@@ -286,13 +293,25 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 		for (c in string.toCharArray()) {
 			drawCharacter(x, y, c, font, invert)
 			x += font.width
-			// move to new line if needed
-			if(x + font.width > width) {
-				x = 0
-				y += h
+			if (x + font.width > width) {
+				when (wrapMode) {
+					TextWrapMode.WRAP -> {
+						// move to new line if needed
+						x = 0
+						y += h
+					}
+					TextWrapMode.TRUNCATE -> {
+						break
+					}
+					TextWrapMode.ELLIPSIS -> {
+						TODO("What to do in ellipsis wrap mode?")
+					}
+				}
 			}
 		}
-		return (y / (font.height + 2))
+		val drawnLines = (y / font.height + 2)
+		return (DrawDimensions(x, y * h * drawnLines, drawnLines))
+//		return (y / (font.height + 2))
 	}
 
 	/**
@@ -443,4 +462,12 @@ enum class Rotation {
 	CW,
 	ONEEIGHTY,
 	CCW
+}
+
+data class DrawDimensions(val x: Int, val y: Int, val textLines: Int = 0)
+
+enum class TextWrapMode {
+	TRUNCATE,
+	WRAP,
+	ELLIPSIS
 }

@@ -33,6 +33,8 @@ data class Album(
     val releaseDate: String? = null,
     @SerialName("release_date_precision")
     val releaseDatePrecision: String? = null,
+    @SerialName("restrictions")
+    val restrictions: Restriction? = null,
     @SerialName("total_tracks")
     val totalTracks: Int = 0,
     @SerialName("type")

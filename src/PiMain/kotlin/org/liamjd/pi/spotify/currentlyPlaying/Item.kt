@@ -3,6 +3,7 @@ package org.liamjd.pi.spotify.currentlyPlaying
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
+/** An Item is either a Full Track object or a Full Episode object */
 @Serializable
 data class Item(
     @SerialName("album")
@@ -16,7 +17,7 @@ data class Item(
     @SerialName("duration_ms")
     val durationMs: Int?,
     @SerialName("explicit")
-    val explicit: Boolean?,
+    val explicit: Boolean = false,
     @SerialName("external_ids")
     val externalIds: ExternalIds?,
     @SerialName("external_urls")
@@ -26,15 +27,19 @@ data class Item(
     @SerialName("id")
     val id: String?,
     @SerialName("is_local")
-    val isLocal: Boolean?,
+    val isLocal: Boolean = false,
     @SerialName("is_playable")
-    val isPlayable: Boolean?,
+    val isPlayable: Boolean = true,
+    @SerialName("linked_from")
+    val linkedFrom: TrackLink? = null,
     @SerialName("name")
     val name: String?,
     @SerialName("popularity")
     val popularity: Int?,
     @SerialName("preview_url")
     val previewUrl: String?,
+    @SerialName("restrictions")
+    val restriction: Restriction? = null,
     @SerialName("track_number")
     val trackNumber: Int?,
     @SerialName("type")

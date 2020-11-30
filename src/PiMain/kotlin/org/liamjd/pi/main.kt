@@ -1,6 +1,7 @@
 package org.liamjd.pi
 
 import libbcm.bcm2835_init
+import org.liamjd.pi.datetime.CLocalDateTime
 import org.liamjd.pi.epaper.EPDModel
 import org.liamjd.pi.epaper.EPaperDisplay
 import org.liamjd.pi.khartoum.KhFont
@@ -30,41 +31,67 @@ fun main() {
 	blackImage.reset(Rotation.CW)
 	redImage.reset(Rotation.CW)
 
+
+	val currentTime = CLocalDateTime()
+
+	println("The current time is ${currentTime.hours}:${currentTime.mins}.${currentTime.secs}")
+
 	try {
 		val refreshedToken = spotify.refreshSpotifyToken()
+
 		val currentlyPlaying = spotify.getCurrentlyPlayingSong(refreshedToken)
 
 		println("${currentlyPlaying.item.name} by ${currentlyPlaying.item.artists?.firstOrNull()?.name} from the album ${currentlyPlaying.item.album?.name}. (Track ${currentlyPlaying.item.trackNumber} of ${currentlyPlaying.item.album?.totalTracks})")
 
 		if (currentlyPlaying.item.name != null) {
-			val drawn = blackImage.drawString(
+			val drawnTitle = blackImage.drawString(
 				xStart = 0, yStart = 0,
 				string = currentlyPlaying.item.name,
 				font = KhFont.CascadiaCodeSemiBold24,
 				wrapMode = TextWrapMode.TRUNCATE
 			)
+			println("Title dimensions are: $drawnTitle")
+
 			if (currentlyPlaying.item.album?.name != null) {
 				val drawnAlbum = redImage.drawString(
 					xStart = 0,
-					yStart = drawn.y + drawn.textLines + 1,
+					yStart = drawnTitle.y,
 					string = currentlyPlaying.item.album.name,
 					font = KhFont.CascadiaMono12,
 					wrapMode = TextWrapMode.TRUNCATE
 				)
+				println("Album dimensions are: $drawnAlbum")
 				blackImage.drawString(
-					xStart = drawnAlbum.x,
+					xStart = 0,
 					yStart = drawnAlbum.y,
-					string = " - ${currentlyPlaying.item.artists?.firstOrNull()?.name}",
+					string = "${currentlyPlaying.item.artists?.firstOrNull()?.name}",
 					font = KhFont.CascadiaMono12,
 					wrapMode = TextWrapMode.TRUNCATE
 				)
 			}
 		}
 
+		println("Display the time in the bottom right")
+		val currentTimeString = "${currentTime.hours.toString().padStart(2, '0')}:${
+			currentTime.mins.toString().padStart(2, '0')
+		}.${currentTime.secs.toString().padStart(2, '0')}"
+		val startingX =
+			blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
+
+		blackImage.drawString(
+			blackImage.width - startingX,
+			blackImage.height - KhFont.CascadiaMono12.height,
+			currentTimeString,
+			KhFont.CascadiaMono12,
+			false,
+			TextWrapMode.WRAP
+		)
+
 		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 
 	} catch (e: Exception) {
 		println("Caught exception: $e")
+		println(e.stackTraceToString())
 	}
 
 	// shut down ePaper

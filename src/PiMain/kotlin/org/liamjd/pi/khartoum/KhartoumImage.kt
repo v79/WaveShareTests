@@ -228,9 +228,14 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 		}
 		val zeroByte: UByte = 0u
 
-		val charOffset = (char - ' ')
-		var nextBytePtr = (font.lut[charOffset])
 		// TODO: What happens if the requested character is not found?
+		val charOffset = if ((char - ' ') <= 126) {
+			(char - ' ')
+		} else {
+			'?' - ' '
+		}
+		var nextBytePtr = (font.lut[charOffset])
+
 		var byte: UByte
 		var bitColumn = 0
 		var pixelColumn = 0
@@ -270,7 +275,7 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 	/**
 	 * Write the text [string] starting at co-oridinates [xStart],[yStart] using the font [font]
 	 * If [invert] is specified, the colours will be inverted, e.g. white-on-black.
-	 * Returns the number of lines of text drawn
+	 * Returns an object containing the x and y co-ordinates of the end of the drawn text, and the number of lines needed to draw this.
 	 */
 	fun drawString(
 		xStart: Int,
@@ -287,9 +292,11 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 //		println("Writing string $string")
 		var x: Int = xStart
 		var y: Int = yStart
-		val h = font.height + 2
+		val characterHeight = font.height + 2
+		var textLines = 1
+		var maxY = characterHeight + yStart
 		val maxWidth = width / font.width
-		println("x: $x, y: $y, h: $h, mw: $maxWidth; current image width: $width")
+//		println("x: $x, y: $y, h: $h, mw: $maxWidth; current image width: $width")
 		for (c in string.toCharArray()) {
 			drawCharacter(x, y, c, font, invert)
 			x += font.width
@@ -298,7 +305,9 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 					TextWrapMode.WRAP -> {
 						// move to new line if needed
 						x = 0
-						y += h
+						y += characterHeight
+						textLines++
+						maxY += characterHeight
 					}
 					TextWrapMode.TRUNCATE -> {
 						break
@@ -309,10 +318,36 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 				}
 			}
 		}
-		val drawnLines = (y / font.height + 2)
-		return (DrawDimensions(x, y * h * drawnLines, drawnLines))
-//		return (y / (font.height + 2))
+		return (DrawDimensions(x + xStart, maxY, textLines))
 	}
+
+	fun measureString(string: String, font: KhFont, wrapMode: TextWrapMode): DrawDimensions {
+		val rawLength = string.length * font.width
+		var maxX: Int = 0
+		var maxY = font.height
+		var textLines: Int = 1
+		when (wrapMode) {
+			TextWrapMode.TRUNCATE -> {
+				maxX = if (rawLength >= width) {
+					width
+				} else {
+					rawLength
+				}
+			}
+			TextWrapMode.ELLIPSIS -> {
+				TODO("What to do in ellipsis wrap mode?")
+			}
+			TextWrapMode.WRAP -> {
+				if (rawLength >= width) {
+					textLines = (rawLength / width) + 1
+				} else {
+					maxX = rawLength
+				}
+			}
+		}
+		return DrawDimensions(maxX, maxY, textLines)
+	}
+
 
 	/**
 	 * Clear the image, filling it with zero bytes.
@@ -466,8 +501,12 @@ enum class Rotation {
 
 data class DrawDimensions(val x: Int, val y: Int, val textLines: Int = 0)
 
+/**
+ * Specify the text wrapping mode - what should happen when the text string is wider than the display?
+ */
 enum class TextWrapMode {
 	TRUNCATE,
 	WRAP,
-	ELLIPSIS
+	ELLIPSIS,
+//	WORDWRAP
 }

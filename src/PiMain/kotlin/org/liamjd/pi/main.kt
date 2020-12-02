@@ -1,7 +1,9 @@
 package org.liamjd.pi
 
+import kotlinx.datetime.Clock
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
 import libbcm.bcm2835_init
-import org.liamjd.pi.datetime.CLocalDateTime
 import org.liamjd.pi.epaper.EPDModel
 import org.liamjd.pi.epaper.EPaperDisplay
 import org.liamjd.pi.khartoum.KhFont
@@ -31,12 +33,9 @@ fun main() {
 	blackImage.reset(Rotation.CW)
 	redImage.reset(Rotation.CW)
 
-
-	val currentTime = CLocalDateTime()
-
-	println("The current time is ${currentTime.hours}:${currentTime.mins}.${currentTime.secs}")
-
 	try {
+		val clock = Clock.System.now()
+		val time = clock.toLocalDateTime(TimeZone.currentSystemDefault())
 		val refreshedToken = spotify.refreshSpotifyToken()
 
 		val currentlyPlaying = spotify.getCurrentlyPlayingSong(refreshedToken)
@@ -72,9 +71,9 @@ fun main() {
 		}
 
 		println("Display the time in the bottom right")
-		val currentTimeString = "${currentTime.hours.toString().padStart(2, '0')}:${
-			currentTime.mins.toString().padStart(2, '0')
-		}.${currentTime.secs.toString().padStart(2, '0')}"
+		val currentTimeString = "${time.hour.toString().padStart(2, '0')}:${
+			time.minute.toString().padStart(2, '0')
+		}.${time.second.toString().padStart(2, '0')}"
 		val startingX =
 			blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
 
@@ -97,6 +96,7 @@ fun main() {
 	// shut down ePaper
 	ePaper.sleep()
 	ePaper.exit()
+
 }
 
 

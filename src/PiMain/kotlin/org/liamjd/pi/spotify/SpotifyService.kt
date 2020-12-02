@@ -84,9 +84,9 @@ class SpotifyService {
 		curl.fetch()
 		curl.close()
 
-		println("=====")
+		/*println("=====")
 		println(currentlyPlayingJson)
-		println("=====")
+		println("=====")*/
 
 		val currentlyPlaying = Json.decodeFromString<CurrentlyPlaying>(currentlyPlayingJson)
 		return currentlyPlaying

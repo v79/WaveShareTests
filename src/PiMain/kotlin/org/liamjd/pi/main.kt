@@ -33,6 +33,15 @@ fun main() {
 	blackImage.reset(Rotation.CW)
 	redImage.reset(Rotation.CW)
 
+
+	/// something like...
+	/*var interrupt = false
+	while(!interrupt) {
+		if(ePaper.button1Listener.true) {
+			interrupt = true
+		}
+	}*/
+
 	try {
 		val clock = Clock.System.now()
 		val time = clock.toLocalDateTime(TimeZone.currentSystemDefault())
@@ -40,33 +49,36 @@ fun main() {
 
 		val currentlyPlaying = spotify.getCurrentlyPlayingSong(refreshedToken)
 
-		println("${currentlyPlaying.item.name} by ${currentlyPlaying.item.artists?.firstOrNull()?.name} from the album ${currentlyPlaying.item.album?.name}. (Track ${currentlyPlaying.item.trackNumber} of ${currentlyPlaying.item.album?.totalTracks})")
+		if (currentlyPlaying != null) {
 
-		if (currentlyPlaying.item.name != null) {
-			val drawnTitle = blackImage.drawString(
-				xStart = 0, yStart = 0,
-				string = currentlyPlaying.item.name,
-				font = KhFont.CascadiaCodeSemiBold24,
-				wrapMode = TextWrapMode.TRUNCATE
-			)
-			println("Title dimensions are: $drawnTitle")
+			println("${currentlyPlaying.item.name} by ${currentlyPlaying.item.artists?.firstOrNull()?.name} from the album ${currentlyPlaying.item.album?.name}. (Track ${currentlyPlaying.item.trackNumber} of ${currentlyPlaying.item.album?.totalTracks})")
 
-			if (currentlyPlaying.item.album?.name != null) {
-				val drawnAlbum = redImage.drawString(
-					xStart = 0,
-					yStart = drawnTitle.y,
-					string = currentlyPlaying.item.album.name,
-					font = KhFont.CascadiaMono12,
+			if (currentlyPlaying.item.name != null) {
+				val drawnTitle = blackImage.drawString(
+					xStart = 0, yStart = 0,
+					string = currentlyPlaying.item.name,
+					font = KhFont.CascadiaCodeSemiBold24,
 					wrapMode = TextWrapMode.TRUNCATE
 				)
-				println("Album dimensions are: $drawnAlbum")
-				blackImage.drawString(
-					xStart = 0,
-					yStart = drawnAlbum.y,
-					string = "${currentlyPlaying.item.artists?.firstOrNull()?.name}",
-					font = KhFont.CascadiaMono12,
-					wrapMode = TextWrapMode.TRUNCATE
-				)
+				println("Title dimensions are: $drawnTitle")
+
+				if (currentlyPlaying.item.album?.name != null) {
+					val drawnAlbum = redImage.drawString(
+						xStart = 0,
+						yStart = drawnTitle.y,
+						string = currentlyPlaying.item.album.name,
+						font = KhFont.CascadiaMono12,
+						wrapMode = TextWrapMode.TRUNCATE
+					)
+					println("Album dimensions are: $drawnAlbum")
+					blackImage.drawString(
+						xStart = 0,
+						yStart = drawnAlbum.y,
+						string = "${currentlyPlaying.item.artists?.firstOrNull()?.name}",
+						font = KhFont.CascadiaMono12,
+						wrapMode = TextWrapMode.TRUNCATE
+					)
+				}
 			}
 		}
 

@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import org.liamjd.pi.curl.CUrl
 import org.liamjd.pi.encodeBase64
 import org.liamjd.pi.spotify.currentlyPlaying.CurrentlyPlaying
+import platform.posix.getenv
 
 class SpotifyService {
 
@@ -66,7 +67,7 @@ class SpotifyService {
 		return token
 	}
 
-	fun getCurrentlyPlayingSong(token: AccessToken): CurrentlyPlaying {
+	fun getCurrentlyPlayingSong(token: AccessToken): CurrentlyPlaying? {
 		val location = "https://api.spotify.com/v1/me/player/currently-playing"
 		val extraHeaders = arrayListOf(
 			"Authorization: Bearer ${token.token}",
@@ -88,8 +89,12 @@ class SpotifyService {
 		println(currentlyPlayingJson)
 		println("=====")*/
 
-		val currentlyPlaying = Json.decodeFromString<CurrentlyPlaying>(currentlyPlayingJson)
-		return currentlyPlaying
+		try {
+			return Json.decodeFromString<CurrentlyPlaying>(currentlyPlayingJson)
+		} catch (e: Exception) {
+			println(e)
+		}
+		return null
 	}
 
 	fun getSpotifyAuthScope(): String {
@@ -112,5 +117,9 @@ class SpotifyService {
 		curl.close()
 
 		return authJson
+	}
+
+	private fun getEnvVariable(varName: String): String {
+		return getenv(varName)?.toKString().toString()
 	}
 }

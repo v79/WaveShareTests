@@ -16,8 +16,6 @@ import platform.posix.exit
 @ExperimentalUnsignedTypes
 fun main() {
 
-	val spotify = SpotifyService()
-
 	if (bcm2835_init() != 1) {
 		println("Error initializing bcm2838. Exiting")
 		exit(-1)
@@ -35,16 +33,51 @@ fun main() {
 
 
 	/// something like...
-	/*var interrupt = false
-	while(!interrupt) {
-		if(ePaper.button1Listener.true) {
-			interrupt = true
-		}
-	}*/
 
+	var displayMode = DisplayModes.Spotify
+	var interrupt = false
+
+	ePaper.buttonActions[5] = { i: Int ->
+		println("invoked function $i)")
+		displayMode = DisplayModes.Spotify
+
+	}
+
+	ePaper.buttonActions[19] = {
+		displayMode = DisplayModes.Quit
+	}
+
+	println("Waiting for key press")
+	while (!interrupt) {
+		val keyPressed = ePaper.pollKeys()
+		if (keyPressed != null) {
+			println("Key $keyPressed pressed!")
+			when (displayMode) {
+				DisplayModes.Spotify -> {
+					spotify(blackImage, redImage)
+					ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
+				}
+				DisplayModes.None -> {
+					// do nothing
+				}
+				DisplayModes.Quit -> {
+					interrupt = true
+				}
+			}
+		}
+		ePaper.delay(100u)
+	}
+
+	// shut down ePaper
+	ePaper.sleep()
+	ePaper.exit()
+
+}
+
+@ExperimentalUnsignedTypes
+fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
+	val spotify = SpotifyService()
 	try {
-		val clock = Clock.System.now()
-		val time = clock.toLocalDateTime(TimeZone.currentSystemDefault())
 		val refreshedToken = spotify.refreshSpotifyToken()
 
 		val currentlyPlaying = spotify.getCurrentlyPlayingSong(refreshedToken)
@@ -82,37 +115,41 @@ fun main() {
 			}
 		}
 
-		println("Display the time in the bottom right")
-		val currentTimeString = "${time.hour.toString().padStart(2, '0')}:${
-			time.minute.toString().padStart(2, '0')
-		}.${time.second.toString().padStart(2, '0')}"
-		val startingX =
-			blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
+		displayTime(blackImage)
 
-		blackImage.drawString(
-			blackImage.width - startingX,
-			blackImage.height - KhFont.CascadiaMono12.height,
-			currentTimeString,
-			KhFont.CascadiaMono12,
-			false,
-			TextWrapMode.WRAP
-		)
-
-		ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 
 	} catch (e: Exception) {
 		println("Caught exception: $e")
 		println(e.stackTraceToString())
 	}
-
-	// shut down ePaper
-	ePaper.sleep()
-	ePaper.exit()
-
 }
 
+@ExperimentalUnsignedTypes
+private fun displayTime(blackImage: KhartoumImage) {
+	val clock = Clock.System.now()
+	val time = clock.toLocalDateTime(TimeZone.currentSystemDefault())
+	println("Display the time in the bottom right")
+	val currentTimeString = "${time.hour.toString().padStart(2, '0')}:${
+		time.minute.toString().padStart(2, '0')
+	}.${time.second.toString().padStart(2, '0')}"
+	val startingX =
+		blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
 
+	blackImage.drawString(
+		blackImage.width - startingX,
+		blackImage.height - KhFont.CascadiaMono12.height,
+		currentTimeString,
+		KhFont.CascadiaMono12,
+		false,
+		TextWrapMode.WRAP
+	)
+}
 
+enum class DisplayModes {
+	None,
+	Spotify,
+	Quit
+}
 
 
 

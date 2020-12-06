@@ -1,0 +1,180 @@
+{
+  "timestamp": 1606584081516,
+  "context": {
+    "external_urls": {
+      "spotify": "https://open.spotify.com/album/4odAbJvNXwZZUp20xWmZQp"
+    },
+    "href": "https://api.spotify.com/v1/albums/4odAbJvNXwZZUp20xWmZQp",
+    "type": "album",
+    "uri": "spotify:album:4odAbJvNXwZZUp20xWmZQp"
+  },
+  "progress_ms": 46494,
+  "item": {
+    "album": {
+      "album_type": "album",
+      "artists": [
+        {
+          "external_urls": {
+            "spotify": "https://open.spotify.com/artist/3TScZ6zJkavDy0tqoGqiCf"
+          },
+          "href": "https://api.spotify.com/v1/artists/3TScZ6zJkavDy0tqoGqiCf",
+          "id": "3TScZ6zJkavDy0tqoGqiCf",
+          "name": "John Grant",
+          "type": "artist",
+          "uri": "spotify:artist:3TScZ6zJkavDy0tqoGqiCf"
+        }
+      ],
+      "available_markets": [
+        "AD",
+        "AE",
+        "AL",
+        "AR",
+        "AT",
+        "AU",
+        "BA",
+        "BE",
+        "BG",
+        "BH",
+        "BO",
+        "BR",
+        "BY",
+        "CH",
+        "CL",
+        "CO",
+        "CY",
+        "CZ",
+        "DE",
+        "DK",
+        "DZ",
+        "EC",
+        "EE",
+        "EG",
+        "ES",
+        "FI",
+        "FR",
+        "GB",
+        "GR",
+        "HK",
+        "HR",
+        "HU",
+        "ID",
+        "IE",
+        "IL",
+        "IN",
+        "IS",
+        "IT",
+        "JO",
+        "JP",
+        "KW",
+        "KZ",
+        "LB",
+        "LI",
+        "LT",
+        "LU",
+        "LV",
+        "MA",
+        "MC",
+        "MD",
+        "ME",
+        "MK",
+        "MT",
+        "MY",
+        "NL",
+        "NO",
+        "NZ",
+        "OM",
+        "PE",
+        "PH",
+        "PL",
+        "PS",
+        "PT",
+        "PY",
+        "QA",
+        "RO",
+        "RS",
+        "RU",
+        "SA",
+        "SE",
+        "SG",
+        "SI",
+        "SK",
+        "TH",
+        "TN",
+        "TR",
+        "TW",
+        "UA",
+        "UY",
+        "VN",
+        "XK",
+        "ZA"
+      ],
+      "external_urls": {
+        "spotify": "https://open.spotify.com/album/4odAbJvNXwZZUp20xWmZQp"
+      },
+      "href": "https://api.spotify.com/v1/albums/4odAbJvNXwZZUp20xWmZQp",
+      "id": "4odAbJvNXwZZUp20xWmZQp",
+      "images": [
+        {
+          "height": 640,
+          "url": "https://i.scdn.co/image/ab67616d0000b2731a9f6a35d004fd8b09359e1a",
+          "width": 640
+        },
+        {
+          "height": 300,
+          "url": "https://i.scdn.co/image/ab67616d00001e021a9f6a35d004fd8b09359e1a",
+          "width": 300
+        },
+        {
+          "height": 64,
+          "url": "https://i.scdn.co/image/ab67616d000048511a9f6a35d004fd8b09359e1a",
+          "width": 64
+        }
+      ],
+      "name": "Queen of Denmark",
+      "release_date": "2010-04-19",
+      "release_date_precision": "day",
+      "total_tracks": 16,
+      "type": "album",
+      "uri": "spotify:album:4odAbJvNXwZZUp20xWmZQp"
+    },
+    "artists": [
+      {
+        "external_urls": {
+          "spotify": "https://open.spotify.com/artist/3TScZ6zJkavDy0tqoGqiCf"
+        },
+        "href": "https://api.spotify.com/v1/artists/3TScZ6zJkavDy0tqoGqiCf",
+        "id": "3TScZ6zJkavDy0tqoGqiCf",
+        "name": "John Grant",
+        "type": "artist",
+        "uri": "spotify:artist:3TScZ6zJkavDy0tqoGqiCf"
+      }
+    ],
+    "available_markets": [],
+    "disc_number": 1,
+    "duration_ms": 218413,
+    "explicit": false,
+    "external_ids": {
+      "isrc": "GBBRP1023505"
+    },
+    "external_urls": {
+      "spotify": "https://open.spotify.com/track/4FqpS94EF8mkpo1wNKslIt"
+    },
+    "href": "https://api.spotify.com/v1/tracks/4FqpS94EF8mkpo1wNKslIt",
+    "id": "4FqpS94EF8mkpo1wNKslIt",
+    "is_local": false,
+    "is_playable": true,
+    "name": "Chicken Bones",
+    "popularity": 21,
+    "preview_url": "https://p.scdn.co/mp3-preview/17b03a07e6043a795b0aca0c39c9c1816018509a?cid=4713cdaa7a21413a9ce0e6910ab8ec19",
+    "track_number": 5,
+    "type": "track",
+    "uri": "spotify:track:4FqpS94EF8mkpo1wNKslIt"
+  },
+  "currently_playing_type": "track",
+  "actions": {
+    "disallows": {
+      "resuming": true
+    }
+  },
+  "is_playing": true
+}

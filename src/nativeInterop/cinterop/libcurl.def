@@ -1,0 +1,14 @@
+headers = curl.h easy.h curlver.h
+headerFilter = *
+
+compilerOpts = -I/src/include/curl
+linkerOpts = -Lsrc/lib/curl/ -lcurl
+
+
+#compilerOpts.linux = -I//wls$/Legacy/usr/include -I//wsl$/Legacy/usr/lib/x86_64-linux-gnu
+#linkerOpts.linux = -L//wsl$/Legacy/usr/lib/x86_64-linux-gnu -lcurl
+
+
+
+# compilerOpts = -I/src/include/curl -I/usr/lib/arm-linux-gnueabihf
+# linkerOpts = -L/usr/lib/arm-linux-gnueabihf -lcurl

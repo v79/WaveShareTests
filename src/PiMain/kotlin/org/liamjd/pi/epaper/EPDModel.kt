@@ -4,6 +4,11 @@ import platform.posix.uint8_t
 
 /** Enum class representing all the Waveshare ePaper display models
  * currently supported.
+ * [modelNumber] internal model name of the device
+ * [pixelWidth] the width of the display in pixels; it may be a portrait device
+ * [pixelHeight] the height of the display in pixels
+ * [pins] the set of the primary command GPIO pins used to communicate with the display, see [EPDPins]
+ * [buttons] a possible empty set of the GPIO pin numbers associated with physical buttons on the display
  */
 @ExperimentalUnsignedTypes
 enum class EPDModel(

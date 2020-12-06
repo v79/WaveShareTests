@@ -9,7 +9,7 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 
 	val uint8_ZERO: uint8_t = 0u
 	val uint8_ONE: uint8_t = 1u
-	val buttonActions: MutableMap<Int, (Int) -> Unit> = mutableMapOf()
+	val buttonActions: MutableMap<Int, () -> Unit> = mutableMapOf()
 
 	init {
 		println("Call GPIOInit")
@@ -290,6 +290,9 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 		bcm2835_spi_transfer(value)
 	}
 
+	/**
+	 * For each of the buttons on the display, initialize them as pull-up inputs
+	 */
 	private fun initializeKeys() {
 		if (model.buttons != null && model.buttons.isNotEmpty()) {
 			println("Initializing keys")
@@ -302,14 +305,17 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 		}
 	}
 
+	/**
+	 * Loop round each of the buttons. If one has been pressed, invoke the function defined for that button
+	 * and return the key number
+	 */
 	fun pollKeys(): Int? {
 		if (model.buttons != null && model.buttons.isNotEmpty()) {
 			for (key in model.buttons) {
 				val lev: uint8_t = bcm2835_gpio_lev(key.toUByte())
 				if (lev == uint8_ZERO) {
-					println("key $key went low -> $lev")
 					if (buttonActions[key] != null) {
-						buttonActions[key]?.invoke(key)
+						buttonActions[key]?.invoke()
 						delay(1000u)
 						return key
 					} else {

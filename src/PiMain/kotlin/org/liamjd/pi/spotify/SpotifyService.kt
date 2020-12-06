@@ -10,11 +10,19 @@ import platform.posix.getenv
 
 class SpotifyService {
 
-	private val spotifySecret = "a71ffb04a41444c3b5e901d2b23bf071"
-	private val spotifyClient = "4713cdaa7a21413a9ce0e6910ab8ec19"
-	private val spotifyAuthBytes = "$spotifyClient:$spotifySecret".encodeToByteArray()
-	private val spotifyAuth = spotifyAuthBytes.encodeBase64().toKString()
+	private val spotifyClient: String
+	private val spotifySecret: String
+	private val spotifyAuthBytes: ByteArray
+	private val spotifyAuth: String
 	private val spotifyRedirectURL = "https://www.liamjd.org/spotCallback"
+
+	init {
+		spotifyClient = getEnvVariable("SPOTIFY_CLIENT")
+		spotifySecret = getEnvVariable("SPOTIFY_SECRET")
+		spotifyAuthBytes = "$spotifyClient:$spotifySecret".encodeToByteArray()
+		spotifyAuth = spotifyAuthBytes.encodeBase64().toKString()
+	}
+
 	private val spotifyCode =
 		"AQAmrj7vFzzBSCaKJA3rRRgvgh2yy2fE2RcBhCDhNp0xhSJ8mhtAX89zHDXp6s6-NfDe2DJr57sBAVeeIBQRRUxTms_qxiW2CO9aTt2oH87XFprjycT15wm9mjA4SmPW4YBEeN3ymE5geeAM5Waxi-_svzqkzDbXLljDG7HgFSB-ONiJF6tKqAc68EFqdYNj_hekPVRz66Tf3cZEITwv5MlMk4kK7bEvMmo0JF5B8G4krgznk-8G"
 	private val spotifyRefreshToken =
@@ -44,15 +52,15 @@ class SpotifyService {
 		return token
 	}
 
-	fun getSpotifyToken(): AccessToken? {
+	private fun getSpotifyToken(): AccessToken? {
 		val location = "https://accounts.spotify.com/api/token"
 		val postData = "grant_type=client_credentials"
-		val extraHeaders = arrayListOf<String>(
+		val extraHeaders = arrayListOf(
 			"Authorization: Basic $spotifyAuth",
 			"Accept: application/json",
 			"Content-Type: application/x-www-form-urlencoded"
 		)
-		var accessTokenJson: String = ""
+		var accessTokenJson = ""
 		val curl = CUrl(url = location, extraHeaders = extraHeaders).apply {
 			header += { if (it.startsWith("HTTP")) println("Response Status: $it") }
 			body += { data ->
@@ -85,10 +93,6 @@ class SpotifyService {
 		curl.fetch()
 		curl.close()
 
-		/*println("=====")
-		println(currentlyPlayingJson)
-		println("=====")*/
-
 		try {
 			return Json.decodeFromString<CurrentlyPlaying>(currentlyPlayingJson)
 		} catch (e: Exception) {
@@ -97,7 +101,7 @@ class SpotifyService {
 		return null
 	}
 
-	fun getSpotifyAuthScope(): String {
+	private fun getSpotifyAuthScope(): String {
 		val location = "https://accounts.spotify.com/api/token"
 		val postData = "grant_type=authorization_code&code=$spotifyCode&redirect_uri=$spotifyRedirectURL"
 		val extraHeaders = arrayListOf(

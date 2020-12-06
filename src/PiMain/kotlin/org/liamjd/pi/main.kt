@@ -60,10 +60,10 @@ fun main() {
 			println("Key $keyPressed pressed!")
 			when (displayMode) {
 				DisplayModes.Spotify -> {
-					ePaper.clear()
 					blackImage.reset()
 					redImage.reset()
 					spotify(blackImage, redImage)
+					displayTime(blackImage)
 					ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 				}
 				DisplayModes.Weather -> {
@@ -86,6 +86,9 @@ fun main() {
 
 }
 
+/**
+ * Retrieve the currently playing song
+ */
 @ExperimentalUnsignedTypes
 fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
 	val spotify = SpotifyService()
@@ -125,28 +128,28 @@ fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
 			}
 		}
 
-		displayTime(blackImage)
-
 	} catch (e: Exception) {
 		println("Caught exception: $e")
 		println(e.stackTraceToString())
 	}
 }
 
+/**
+ * Display the current time (HH:MM) in the bottom right of the screen
+ */
 @ExperimentalUnsignedTypes
-private fun displayTime(blackImage: KhartoumImage) {
+private fun displayTime(image: KhartoumImage) {
 	val clock = Clock.System.now()
 	val time = clock.toLocalDateTime(TimeZone.currentSystemDefault())
-	println("Display the time in the bottom right")
 	val currentTimeString = "${time.hour.toString().padStart(2, '0')}:${
 		time.minute.toString().padStart(2, '0')
-	}}"
+	}"
 	val startingX =
-		blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
+		image.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
 
-	blackImage.drawString(
-		blackImage.width - startingX,
-		blackImage.height - KhFont.CascadiaMono12.height,
+	image.drawString(
+		image.width - startingX,
+		image.height - KhFont.CascadiaMono12.height,
 		currentTimeString,
 		KhFont.CascadiaMono12,
 		false,

@@ -25,28 +25,34 @@ fun main() {
 		it.clear()
 		it.delay(2000u)
 	}
+	var displayMode = DisplayModes.Spotify
 
 	val blackImage = KhartoumImage(ePaperModel = ePaper.model)
 	val redImage = KhartoumImage(ePaperModel = ePaper.model)
 	blackImage.reset(Rotation.CW)
 	redImage.reset(Rotation.CW)
+	spotify(blackImage, redImage)
+	ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 
 
-	/// something like...
-
-	var displayMode = DisplayModes.Spotify
-	var interrupt = false
-
-	ePaper.buttonActions[5] = { i: Int ->
-		println("invoked function $i)")
+	// define button press functions
+	ePaper.buttonActions[5] = {
 		displayMode = DisplayModes.Spotify
+	}
 
+	ePaper.buttonActions[6] = {
+		displayMode = DisplayModes.Weather
+	}
+
+	ePaper.buttonActions[13] = {
+		displayMode = DisplayModes.Calendar
 	}
 
 	ePaper.buttonActions[19] = {
 		displayMode = DisplayModes.Quit
 	}
 
+	var interrupt = false
 	println("Waiting for key press")
 	while (!interrupt) {
 		val keyPressed = ePaper.pollKeys()
@@ -54,10 +60,16 @@ fun main() {
 			println("Key $keyPressed pressed!")
 			when (displayMode) {
 				DisplayModes.Spotify -> {
+					ePaper.clear()
+					blackImage.reset()
+					redImage.reset()
 					spotify(blackImage, redImage)
 					ePaper.display(arrayOf(blackImage.bytes, redImage.bytes))
 				}
-				DisplayModes.None -> {
+				DisplayModes.Weather -> {
+					// do nothing
+				}
+				DisplayModes.Calendar -> {
 					// do nothing
 				}
 				DisplayModes.Quit -> {
@@ -79,11 +91,9 @@ fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
 	val spotify = SpotifyService()
 	try {
 		val refreshedToken = spotify.refreshSpotifyToken()
-
 		val currentlyPlaying = spotify.getCurrentlyPlayingSong(refreshedToken)
 
 		if (currentlyPlaying != null) {
-
 			println("${currentlyPlaying.item.name} by ${currentlyPlaying.item.artists?.firstOrNull()?.name} from the album ${currentlyPlaying.item.album?.name}. (Track ${currentlyPlaying.item.trackNumber} of ${currentlyPlaying.item.album?.totalTracks})")
 
 			if (currentlyPlaying.item.name != null) {
@@ -117,7 +127,6 @@ fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
 
 		displayTime(blackImage)
 
-
 	} catch (e: Exception) {
 		println("Caught exception: $e")
 		println(e.stackTraceToString())
@@ -131,7 +140,7 @@ private fun displayTime(blackImage: KhartoumImage) {
 	println("Display the time in the bottom right")
 	val currentTimeString = "${time.hour.toString().padStart(2, '0')}:${
 		time.minute.toString().padStart(2, '0')
-	}.${time.second.toString().padStart(2, '0')}"
+	}}"
 	val startingX =
 		blackImage.measureString(currentTimeString, KhFont.CascadiaMono12, wrapMode = TextWrapMode.WRAP).x
 
@@ -146,8 +155,9 @@ private fun displayTime(blackImage: KhartoumImage) {
 }
 
 enum class DisplayModes {
-	None,
 	Spotify,
+	Weather,
+	Calendar,
 	Quit
 }
 

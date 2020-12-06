@@ -45,7 +45,7 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 
 		when (model) {
 			EPDModel.TWO_IN7_B -> {
-				println("Clear black")
+				// clear black
 				sendCommand(0x10u)
 				for (j in 0 until height) {
 					for (i in 0 until width) {
@@ -54,7 +54,7 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 				}
 				sendCommand(0x11u) // DATA_STOP
 
-				println("Clear red")
+				// clear red
 				sendCommand(0x13u)
 				for (j in 0 until height) {
 					for (i in 0 until width) {
@@ -294,7 +294,6 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 		if (model.buttons != null && model.buttons.isNotEmpty()) {
 			println("Initializing keys")
 			for (key in model.buttons) {
-				println("key $key")
 				setPinMode(key.toUByte(), FunctionSelect.INPUT.value)
 				// TODO: wrap the bcm2835 calls, perhaps a more general setPin(pin,mode,pud,len) option?
 				bcm2835_gpio_set_pud(key.toUByte(), PUDControl.PUD_UP.value)
@@ -310,7 +309,6 @@ class EPaperDisplay(val model: EPDModel) : EPaperDisplayCommands {
 				if (lev == uint8_ZERO) {
 					println("key $key went low -> $lev")
 					if (buttonActions[key] != null) {
-						println("invoking function...")
 						buttonActions[key]?.invoke(key)
 						delay(1000u)
 						return key

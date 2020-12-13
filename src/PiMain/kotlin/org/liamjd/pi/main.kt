@@ -99,33 +99,55 @@ fun spotify(blackImage: KhartoumImage, redImage: KhartoumImage) {
 		if (currentlyPlaying != null) {
 			println("${currentlyPlaying.item.name} by ${currentlyPlaying.item.artists?.firstOrNull()?.name} from the album ${currentlyPlaying.item.album?.name}. (Track ${currentlyPlaying.item.trackNumber} of ${currentlyPlaying.item.album?.totalTracks})")
 
-			if (currentlyPlaying.item.name != null) {
-				val drawnTitle = blackImage.drawString(
-					xStart = 0, yStart = 0,
-					string = currentlyPlaying.item.name,
-					font = KhFont.CascadiaCodeSemiBold24,
-					wrapMode = TextWrapMode.TRUNCATE
-				)
-				println("Title dimensions are: $drawnTitle")
+			currentlyPlaying.also {
 
-				if (currentlyPlaying.item.album?.name != null) {
-					val drawnAlbum = redImage.drawString(
-						xStart = 0,
-						yStart = drawnTitle.y,
-						string = currentlyPlaying.item.album.name,
-						font = KhFont.CascadiaMono12,
+				if (it.item.name != null) {
+					val drawnTitle = blackImage.drawString(
+						xStart = 0, yStart = 0,
+						string = it.item.name,
+						font = KhFont.CascadiaCodeSemiBold24,
 						wrapMode = TextWrapMode.TRUNCATE
 					)
-					println("Album dimensions are: $drawnAlbum")
-					blackImage.drawString(
-						xStart = 0,
-						yStart = drawnAlbum.y,
-						string = "${currentlyPlaying.item.artists?.firstOrNull()?.name}",
-						font = KhFont.CascadiaMono12,
-						wrapMode = TextWrapMode.TRUNCATE
-					)
+					println("Title dimensions are: $drawnTitle")
+
+					if (it.item.album?.name != null) {
+						val drawnAlbum = redImage.drawString(
+							xStart = 0,
+							yStart = drawnTitle.y,
+							string = it.item.album.name,
+							font = KhFont.CascadiaMono12,
+							wrapMode = TextWrapMode.TRUNCATE
+						)
+						println("Album dimensions are: $drawnAlbum")
+						blackImage.drawString(
+							xStart = 0,
+							yStart = drawnAlbum.y,
+							string = "${it.item.artists?.firstOrNull()?.name}",
+							font = KhFont.CascadiaMono12,
+							wrapMode = TextWrapMode.TRUNCATE
+						)
+
+						if (it.item.durationMs != null) {
+							val minutes = it.item.durationMs / 1000 / 60
+							val seconds = it.item.durationMs / 1000 % 60
+							val timeString = "${minutes}m:${seconds}s"
+							println("Track length is: $minutes:$seconds")
+
+							val timeStringSize =
+								blackImage.measureString(timeString, KhFont.CascadiaMono12, TextWrapMode.TRUNCATE)
+							blackImage.drawString(
+								xStart = blackImage.width - 2 - timeStringSize.x,
+								yStart = drawnAlbum.y,
+								string = timeString,
+								font = KhFont.CascadiaMono12,
+								wrapMode = TextWrapMode.TRUNCATE
+							)
+						}
+					}
 				}
 			}
+
+			displayTime(blackImage)
 		}
 
 	} catch (e: Exception) {

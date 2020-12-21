@@ -17,22 +17,25 @@ Makes use of the [bcm2835](https://www.airspayce.com/mikem/bcm2835/index.html) C
 
 The library can work in either portrait or landscape mode.
 
-The library should be extensible, to support a range of Waveshare ePaper displays, but for now only the *2.7 inch B* three-colour display is working.
+The library should be extensible, to support a range of Waveshare ePaper displays, but for now only the *2.7 inch B*
+three-colour display is working.
 
 ## Still to do
 
 - *High priorities:*
 - Draw a bitmap at given co-ordinates, to make it easier to combine text and images :arrow_double_up:
 - Load bitmaps from a file, probably a BMP file
-- Save bitmaps to a file, to ease debugging
+- Save bitmaps to a file, to ease debugging - started, but can't handle rotation
 - *Lower priorities:*
 - Better wrapping of text in `drawString`, to avoid hard breaks in the middle of a word
-- Kerning support? :arrow_double_down:
+- Support the hardware keys on some Waveshare ePaper HATS - basic implementation working
+- Extend the range of fonts - the current solution is limited to the lower ASCII set. But a fuller implementation will
+  probably require loading data from file, rather than stored within code. And that needs better file handling support
+  from Kotlin/Native.
 
 ## Other ideas
 
-- Support the hardware keys on some Waveshare ePaper HATS
+- Kerning support? :arrow_double_down:
 - Support partial updates (I need an epaper device which supports this before I will try)
-
 
 [badge-linux]: https://img.shields.io/badge/platform-raspberrypi-red

@@ -2,3 +2,5 @@
 /.gradle/
 /build/
 /build/classes/kotlin/Pi/main/
+/DONOTCOMMIT.txt
+/CopyToPi.bat

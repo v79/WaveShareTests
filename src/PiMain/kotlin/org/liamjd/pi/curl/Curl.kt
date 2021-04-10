@@ -15,6 +15,7 @@ class CUrl(url: String, extraHeaders: List<String>? = null) {
 	private val curl = curl_easy_init()
 
 	init {
+		curl_easy_escape(curl, url, url.length)
 		curl_easy_setopt(curl, CURLOPT_URL, url)
 		val header = staticCFunction(::header_callback)
 		curl_easy_setopt(curl, CURLOPT_HEADERFUNCTION, header)

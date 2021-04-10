@@ -283,7 +283,8 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 		string: String,
 		font: KhFont,
 		invert: Boolean = false,
-		wrapMode: TextWrapMode = TextWrapMode.WRAP
+		wrapMode: TextWrapMode = TextWrapMode.WRAP,
+		maxLines: Int = 1
 	): DrawDimensions {
 		if (xStart > width || yStart > height) {
 			println("Start or end position is outside of the range of ($width,$height)")
@@ -307,6 +308,9 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 						x = 0
 						y += characterHeight
 						textLines++
+						if (textLines > maxLines) {
+							break
+						}
 						maxY += characterHeight
 					}
 					TextWrapMode.TRUNCATE -> {
@@ -324,7 +328,7 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 	fun measureString(string: String, font: KhFont, wrapMode: TextWrapMode): DrawDimensions {
 		val rawLength = string.length * font.width
 		var maxX: Int = 0
-		var maxY = font.height
+		val maxY = font.height
 		var textLines: Int = 1
 		when (wrapMode) {
 			TextWrapMode.TRUNCATE -> {

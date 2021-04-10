@@ -7,25 +7,25 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Item(
     @SerialName("album")
-    val album: Album?,
+    val album: Album? = null,
     @SerialName("artists")
-    val artists: List<SimpleArtist>?,
+    val artists: List<SimpleArtist>? = null,
     @SerialName("available_markets")
-    val availableMarkets: List<String>?,
+    val availableMarkets: List<String>? = emptyList(),
     @SerialName("disc_number")
-    val discNumber: Int?,
+    val discNumber: Int? = 1,
     @SerialName("duration_ms")
-    val durationMs: Int?,
+    val durationMs: Int? = 1,
     @SerialName("explicit")
     val explicit: Boolean = false,
     @SerialName("external_ids")
-    val externalIds: ExternalIds?,
+    val externalIds: ExternalIds? = null,
     @SerialName("external_urls")
-    val externalUrls: ExternalUrls?,
+    val externalUrls: ExternalUrls? = null,
     @SerialName("href")
-    val href: String?,
+    val href: String? = null,
     @SerialName("id")
-    val id: String?,
+    val id: String? = null,
     @SerialName("is_local")
     val isLocal: Boolean = false,
     @SerialName("is_playable")
@@ -33,17 +33,38 @@ data class Item(
     @SerialName("linked_from")
     val linkedFrom: TrackLink? = null,
     @SerialName("name")
-    val name: String?,
+    val name: String? = "",
     @SerialName("popularity")
-    val popularity: Int?,
+    val popularity: Int? = null,
     @SerialName("preview_url")
-    val previewUrl: String?,
+    val previewUrl: String? = null,
     @SerialName("restrictions")
     val restriction: Restriction? = null,
     @SerialName("track_number")
-    val trackNumber: Int?,
+    val trackNumber: Int? = 1,
     @SerialName("type")
-    val type: String?,
+    val type: String? = "",
     @SerialName("uri")
-    val uri: String?
+    val uri: String? = null,
+    // podcast episode stuff
+    @SerialName("audio_preview_url")
+    val audioPreviewUrl: String? = null,
+    @SerialName("description")
+    val description: String? = null,
+    @SerialName("html_description")
+    val htmlDescription: String? = null,
+    @SerialName("is_externally_hosted")
+    val isExternallyHosted: Boolean = false,
+    @SerialName("images")
+    val images: List<Image>? = emptyList(),
+    @SerialName("show")
+    val show: Show? = null,
+    @SerialName("language")
+    val language: String? = "",
+    @SerialName("languages")
+    val languages: List<String>? = emptyList(),
+    @SerialName("release_date_precision")
+    val releaseDatePrecision: String? = null,
+    @SerialName("release_date")
+    val releaseDate: String? = null // perhaps in the future a Date
 )

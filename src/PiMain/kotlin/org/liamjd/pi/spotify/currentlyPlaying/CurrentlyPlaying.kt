@@ -14,7 +14,7 @@ data class CurrentlyPlaying(
     @SerialName("is_playing")
     val isPlaying: Boolean? = true,
     @SerialName("item")
-    val item: Item,
+    val item: Item?,
     @SerialName("progress_ms")
     val progressMs: Int? = 0,
     @SerialName("timestamp")

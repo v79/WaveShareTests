@@ -76,13 +76,14 @@ class SpotifyService {
 	}
 
 	fun getCurrentlyPlayingSong(token: AccessToken): CurrentlyPlaying? {
-		val location = "https://api.spotify.com/v1/me/player/currently-playing"
+		val location = "https://api.spotify.com/v1/me/player/currently-playing?additional_types=episode,track"
 		val extraHeaders = arrayListOf(
 			"Authorization: Bearer ${token.token}",
 			"Accept: application/json",
 			"Content-Type: application/json"
 		)
 
+		println("Fetching from $location")
 		var currentlyPlayingJson: String = ""
 		val curl = CUrl(url = location, extraHeaders = extraHeaders).apply {
 			header += { if (it.startsWith("HTTP")) println("Response Status: $it") }
@@ -92,6 +93,8 @@ class SpotifyService {
 		}
 		curl.fetch()
 		curl.close()
+
+//		println(currentlyPlayingJson)
 
 		try {
 			return Json.decodeFromString<CurrentlyPlaying>(currentlyPlayingJson)

@@ -227,10 +227,3 @@ enum class DisplayModes {
 	Calendar,
 	Quit
 }
-
-
-
-
-
-
-

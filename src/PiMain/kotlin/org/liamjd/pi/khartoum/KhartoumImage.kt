@@ -298,6 +298,9 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 		var maxY = characterHeight + yStart
 		val maxWidth = width / font.width
 //		println("x: $x, y: $y, h: $h, mw: $maxWidth; current image width: $width")
+		val tokens = string.split(' ')
+//		for(t in tokens) {
+//			println("Drawing $t")
 		for (c in string.toCharArray()) {
 			drawCharacter(x, y, c, font, invert)
 			x += font.width
@@ -322,6 +325,8 @@ class KhartoumImage(private val ePaperModel: EPDModel) {
 				}
 			}
 		}
+//			drawCharacter(x,y,' ',font,invert)
+//		}
 		return (DrawDimensions(x + xStart, maxY, textLines))
 	}
 
